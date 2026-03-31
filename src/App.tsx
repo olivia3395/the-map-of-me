@@ -1,25 +1,93 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Plus, Download, Map, Sparkles, Play, Pause, Languages } from "lucide-react";
+import { 
+  Plus, 
+  Download, 
+  Map as MapIcon, 
+  Sparkles, 
+  Play, 
+  Pause, 
+  Languages, 
+  Compass, 
+  BookOpen, 
+  Settings, 
+  Search,
+  ChevronRight,
+  Globe,
+  Clock,
+  MapPin,
+  User,
+  List
+} from "lucide-react";
 import { Toaster, toast } from "sonner";
 import MapView from "./components/MapView";
 import Constellation from "./components/Constellation";
 import CityProfileCard from "./components/CityProfileCard";
 import AddPlaceModal from "./components/AddPlaceModal";
 import Timeline from "./components/Timeline";
+import TrippinPick from "./components/TrippinPick";
+import WorkDetail from "./components/WorkDetail";
+import CheckInModal from "./components/CheckInModal";
 import { ManagePlacesModal, ProfileModal, SettingsModal } from "./components/Modals";
-import { Place } from "./types";
+import { Place, Work, CheckInPoint, CheckInRecord } from "./types";
 import { t as translations, Language } from "./i18n";
+
+const MOCK_WORKS: Work[] = [
+  {
+    id: '1',
+    title: 'Begin Again',
+    titleZh: '再次出发之纽约遇见你',
+    type: 'movie',
+    year: '2013',
+    director: 'John Carney',
+    matchRate: 98,
+    locations: ['New York'],
+    quote: "You can tell a lot about a person by what's on their playlist.",
+    quoteZh: "看一个人的播放列表，就能了解他很多。",
+    introduction: "A chance encounter between a disgraced music-business executive and a young singer-songwriter new to Manhattan turns into a promising collaboration.",
+    introductionZh: "格雷塔跟随男友来到纽约，却遭遇背叛。在失意之时，她遇到了同样落魄的音乐制作人丹，两人决定在纽约的街头录制一张专辑。",
+    posterUrl: 'https://picsum.photos/seed/beginagain/800/1200',
+    checkInPoints: [
+      { id: 'p1', name: 'Washington Square Park', nameZh: '华盛顿广场公园', location: 'Greenwich Village, Manhattan', locationZh: '曼哈顿格林威治村' },
+      { id: 'p2', name: 'Times Square', nameZh: '时代广场', location: 'Manhattan', locationZh: '曼哈顿' },
+      { id: 'p3', name: 'Central Park', nameZh: '中央公园', location: 'Manhattan', locationZh: '曼哈顿' },
+    ]
+  },
+  {
+    id: '2',
+    title: 'The Great Gatsby',
+    titleZh: '了不起的盖茨比',
+    type: 'book',
+    year: '1925',
+    author: 'F. Scott Fitzgerald',
+    matchRate: 95,
+    locations: ['New York', 'Long Island'],
+    quote: "So we beat on, boats against the current, borne back ceaselessly into the past.",
+    quoteZh: "于是我们奋力向前，逆水行舟，被不断地向后推，推入过去。",
+    introduction: "The story of the mysteriously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan.",
+    introductionZh: "尼克来到纽约，卷入了邻居盖茨比与黛西之间的情感纠葛。这是一个关于梦想、爱情与幻灭的故事。",
+    posterUrl: 'https://picsum.photos/seed/gatsby/800/1200',
+    checkInPoints: [
+      { id: 'p4', name: 'Plaza Hotel', nameZh: '广场饭店', location: '5th Ave, Manhattan', locationZh: '曼哈顿第五大道' },
+      { id: 'p5', name: 'Queensboro Bridge', nameZh: '皇后区大桥', location: 'New York City', locationZh: '纽约市' },
+    ]
+  }
+];
+
+type AppMode = 'atlas' | 'discover' | 'journal' | 'work-detail';
 
 export default function App() {
   const [language, setLanguage] = useState<Language>("en");
   const t = translations[language];
 
-  const [mode, setMode] = useState<"overview" | "explore">("overview");
+  const [mode, setMode] = useState<AppMode>("atlas");
   const [position, setPosition] = useState<{ coordinates: [number, number]; zoom: number; pitch?: number; bearing?: number; duration?: number }>({ coordinates: [0, 30], zoom: 1, pitch: 0, bearing: 0 });
   const [places, setPlaces] = useState<Place[]>([]);
   const [isAddingPlace, setIsAddingPlace] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+
+  const [selectedWork, setSelectedWork] = useState<Work | null>(null);
+  const [activeCheckInPoint, setActiveCheckInPoint] = useState<CheckInPoint | null>(null);
 
   const [mapTheme, setMapTheme] = useState("voyager");
   const [showRoute, setShowRoute] = useState(true);
@@ -54,15 +122,47 @@ export default function App() {
       orderIndex: places.length,
     };
     setPlaces([...(places || []), newPlace]);
-    setMode("explore");
+    setMode("atlas");
     setPosition({ coordinates: [newPlace.lng, newPlace.lat], zoom: 13, pitch: 45, bearing: 15 });
     setSelectedPlace(newPlace);
   };
 
   const handlePlaceClick = (place: Place) => {
-    setMode("explore");
+    setMode("atlas");
     setPosition({ coordinates: [place.lng, place.lat], zoom: 13, pitch: 45, bearing: 15 });
     setSelectedPlace(place);
+  };
+
+  const handlePick = (city: string, genres: string[]) => {
+    toast.success(language === 'zh' ? `正在为你寻找关于 ${city} 的灵感...` : `Finding inspiration for ${city}...`);
+  };
+
+  const handleSelectWork = (work: Work) => {
+    setSelectedWork(work);
+    setMode("work-detail");
+  };
+
+  const handleCheckInFinish = (record: CheckInRecord) => {
+    if (!selectedWork || !activeCheckInPoint) return;
+
+    const newPlace: Place = {
+      id: crypto.randomUUID(),
+      cityName: activeCheckInPoint.nameZh,
+      country: "USA",
+      lat: 40.7128 + (Math.random() - 0.5) * 0.1,
+      lng: -74.0060 + (Math.random() - 0.5) * 0.1,
+      year: new Date().getFullYear().toString(),
+      memory: record.reflection,
+      tag: selectedWork.titleZh,
+      orderIndex: places.length,
+    };
+
+    setPlaces([...places, newPlace]);
+    setActiveCheckInPoint(null);
+    setMode("atlas");
+    setPosition({ coordinates: [newPlace.lng, newPlace.lat], zoom: 15, pitch: 45, bearing: 0 });
+    setSelectedPlace(newPlace);
+    toast.success(language === 'zh' ? '打卡成功！已添加到你的旅程地图。' : 'Check-in successful! Added to your journey map.');
   };
 
   const handleExport = () => {
@@ -74,17 +174,12 @@ export default function App() {
     toast.success(t.linkCopied);
   };
 
-  const themes = ['voyager', 'positron', 'dark-matter'];
   const handleThemeToggle = () => {
+    const themes = ['voyager', 'positron', 'dark-matter'];
     const nextIndex = (themes.indexOf(mapTheme) + 1) % themes.length;
     const nextTheme = themes[nextIndex];
     setMapTheme(nextTheme);
-    const themeNames: Record<string, string> = {
-      'voyager': t.vibrant,
-      'positron': t.lightClean,
-      'dark-matter': t.midnightDark
-    };
-    toast.success(`${t.themeChanged} ${themeNames[nextTheme]}`);
+    toast.success(`${t.themeChanged}`);
   };
 
   const handleRegionClick = (region: string) => {
@@ -93,214 +188,209 @@ export default function App() {
       'Europe': { coordinates: [15, 50], zoom: 4 },
       'Americas': { coordinates: [-95, 40], zoom: 3 },
     };
-    const regionKey = region === 'Asia' ? 'Asia' : region === 'Europe' ? 'Europe' : 'Americas';
-    if (regions[regionKey]) {
-      setPosition({ ...regions[regionKey], pitch: 0, bearing: 0 });
+    if (regions[region]) {
+      setPosition({ ...regions[region], pitch: 0, bearing: 0 });
       setSelectedPlace(null);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-midnight)] text-[var(--color-starlight)] font-sans overflow-hidden relative">
-      <MapView
-        places={places}
-        activePlaceId={selectedPlace?.id || null}
-        onPlaceClick={handlePlaceClick}
-        position={position}
-        onMoveEnd={setPosition}
-        mode={mode}
-        mapTheme={mapTheme}
-        showRoute={showRoute}
-        showBuildings={showBuildings}
-      />
+    <div className="flex h-screen w-screen overflow-hidden bg-trippin-bg text-trippin-ink selection:bg-trippin-accent selection:text-white">
+      <Toaster position="top-center" expand={false} richColors />
 
-      <AnimatePresence>
-        {mode === "overview" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
-            transition={{ duration: 1, ease: "easeInOut" }}
-            className="absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none"
+      {/* Side Rail Navigation */}
+      <nav className="w-16 md:w-20 flex flex-col items-center py-8 brutalist-border-r z-50 bg-trippin-bg">
+        <div className="mb-12">
+          <div className="w-10 h-10 bg-trippin-accent rounded-sm flex items-center justify-center text-white font-bold text-xl">
+            T
+          </div>
+        </div>
+
+        <div className="flex-1 flex flex-col gap-8">
+          <NavButton 
+            active={mode === 'atlas'} 
+            onClick={() => setMode('atlas')} 
+            icon={<MapIcon size={22} />} 
+            label="Atlas"
+          />
+          <NavButton 
+            active={mode === 'discover' || mode === 'work-detail'} 
+            onClick={() => setMode('discover')} 
+            icon={<Compass size={22} />} 
+            label="Discover"
+          />
+          <NavButton 
+            active={mode === 'journal'} 
+            onClick={() => setMode('journal')} 
+            icon={<List size={22} />} 
+            label="Journal"
+          />
+        </div>
+
+        <div className="mt-auto flex flex-col gap-6">
+          <button 
+            onClick={() => setLanguage(language === 'en' ? 'zh' : 'en')}
+            className="text-[10px] font-mono font-bold uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity"
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-midnight)]/60 via-transparent to-[var(--color-midnight)]/80" />
-
-            <div className="relative z-30 text-center pointer-events-auto px-6">
-              <Sparkles className="w-8 h-8 text-[var(--color-gold)] mx-auto mb-8 opacity-80" />
-              <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif text-transparent bg-clip-text bg-gradient-to-b from-[var(--color-gold)] to-yellow-600 tracking-tight leading-[1.1] mb-6 drop-shadow-2xl">
-                {t.title}
-              </h1>
-              <p className="text-lg md:text-xl text-slate-300 font-light tracking-[0.3em] uppercase mb-12 text-glow-subtle">
-                {t.subtitle}
-              </p>
-              <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-                <button
-                  onClick={() => {
-                    setMode("explore");
-                    setPosition({ coordinates: [0, 30], zoom: 2, pitch: 30, bearing: 0 });
-                  }}
-                  className="group relative inline-flex items-center justify-center px-10 py-4 text-sm uppercase tracking-[0.2em] text-white bg-white/5 border border-[var(--color-gold)]/40 rounded-full overflow-hidden transition-all duration-500 hover:border-[var(--color-gold)] hover:bg-[var(--color-gold)]/20 backdrop-blur-md shadow-[0_0_30px_rgba(253,224,71,0.1)]"
-                >
-                  <span className="relative z-10 flex items-center gap-3">
-                    <Map className="w-4 h-4" />
-                    {t.enterAtlas}
-                  </span>
-                </button>
-                
-                <button
-                  onClick={() => setLanguage(language === 'en' ? 'zh' : 'en')}
-                  className="group relative inline-flex items-center justify-center px-6 py-4 text-xs uppercase tracking-[0.2em] text-white/70 bg-white/5 border border-white/20 rounded-full overflow-hidden transition-all duration-500 hover:border-white/40 hover:bg-white/10 backdrop-blur-md"
-                >
-                  <span className="relative z-10 flex items-center gap-3">
-                    <Languages className="w-4 h-4" />
-                    {language === 'en' ? '中文' : 'English'}
-                  </span>
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {mode === "explore" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
-            className="absolute inset-0 z-20 pointer-events-none"
+            {language === 'en' ? 'ZH' : 'EN'}
+          </button>
+          <button 
+            onClick={() => setIsSettingsOpen(true)}
+            className="opacity-50 hover:opacity-100 transition-opacity"
           >
+            <Settings size={20} />
+          </button>
+        </div>
+      </nav>
+
+      {/* Main Content Area */}
+      <main className="flex-1 relative overflow-hidden">
+        <AnimatePresence mode="wait">
+          {mode === 'atlas' && (
             <motion.div 
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="absolute top-8 left-8 pointer-events-auto flex items-center gap-4" 
+              key="atlas"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0"
             >
-              <div 
-                className="cursor-pointer group bg-white/60 backdrop-blur-xl px-6 py-4 rounded-3xl shadow-lg border border-white/50"
-                onClick={() => { 
-                  setMode("overview"); 
-                  setPosition({ coordinates: [0, 30], zoom: 1, pitch: 0, bearing: 0 }); 
-                  setSelectedPlace(null); 
-                }}
-              >
-                <h1 className="font-serif text-2xl tracking-wide text-slate-900 font-bold drop-shadow-sm group-hover:text-yellow-700 transition-colors duration-300">
-                  {t.atlasView}
-                </h1>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-slate-700 mt-1 font-bold group-hover:text-slate-900 transition-colors">
-                  ← {t.returnHome}
-                </p>
+              <MapView
+                places={places}
+                activePlaceId={selectedPlace?.id || null}
+                onPlaceClick={handlePlaceClick}
+                position={position}
+                onMoveEnd={setPosition}
+                mode="explore"
+                mapTheme={mapTheme}
+                showRoute={showRoute}
+                showBuildings={showBuildings}
+              />
+              
+              {/* Atlas Overlay UI */}
+              <div className="absolute top-8 left-8 z-10">
+                <h1 className="text-4xl font-serif italic mb-1">Atlas</h1>
+                <p className="text-xs font-mono uppercase tracking-[0.2em] opacity-50">Global Memory Grid</p>
               </div>
 
-              <button
-                onClick={() => setLanguage(language === 'en' ? 'zh' : 'en')}
-                className="flex items-center gap-2 px-4 py-3 bg-white/60 backdrop-blur-xl border border-white/50 rounded-full text-[10px] font-bold tracking-widest uppercase text-slate-700 hover:bg-white hover:text-slate-900 transition-all shadow-sm"
-              >
-                <Languages className="w-4 h-4" />
-                {language === 'en' ? 'ZH' : 'EN'}
-              </button>
-            </motion.div>
-
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-              className="absolute top-32 left-8 flex flex-col gap-2 pointer-events-auto z-50"
-            >
-                {[
-                  { id: 'Americas', label: t.americas },
-                  { id: 'Europe', label: t.europe },
-                  { id: 'Asia', label: t.asia }
-                ].map((region) => (
+              {/* Region Quick Nav */}
+              <div className="absolute top-32 left-8 flex flex-col gap-2 z-10">
+                {['Americas', 'Europe', 'Asia'].map((region) => (
                   <button
-                    key={region.id}
-                    onClick={() => handleRegionClick(region.id)}
-                    className="px-4 py-2 bg-white/60 backdrop-blur-md border border-white/50 rounded-full text-xs font-bold tracking-widest uppercase text-slate-700 hover:bg-white hover:text-slate-900 transition-all shadow-sm text-left"
+                    key={region}
+                    onClick={() => handleRegionClick(region)}
+                    className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase text-white hover:bg-white hover:text-black transition-all shadow-sm text-left"
                   >
-                    {region.label}
+                    {region}
                   </button>
                 ))}
-              </motion.div>
+              </div>
 
-            <Constellation 
-              places={places} 
-              onPlaceClick={handlePlaceClick} 
-              activePlaceId={selectedPlace?.id || null} 
-            />
-
-            <motion.div 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="absolute bottom-8 right-8 flex items-center gap-4 pointer-events-auto print:hidden z-50"
-            >
-              <button
-                onClick={() => setIsAddingPlace(true)}
-                className="group relative flex items-center gap-2 px-6 py-3 bg-white/90 backdrop-blur-xl border border-white/50 rounded-full text-sm font-semibold tracking-widest hover:bg-white transition-all shadow-[0_10px_20px_rgba(0,0,0,0.1)] text-slate-800"
-              >
-                <Plus className="w-4 h-4 text-slate-600" />
-                <span>{t.addPlace}</span>
-              </button>
-
-              {places.length > 0 && (
-                <button
-                  onClick={handleExport}
-                  className="group relative flex items-center gap-2 px-6 py-3 bg-white/90 backdrop-blur-xl border border-white/50 rounded-full text-sm font-semibold tracking-widest hover:bg-white transition-all shadow-[0_10px_20px_rgba(0,0,0,0.1)] text-slate-800"
+              <div className="absolute bottom-8 right-8 z-10 flex gap-4">
+                <button 
+                  onClick={() => setIsAddingPlace(true)}
+                  className="w-14 h-14 bg-trippin-accent text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-105 transition-transform"
                 >
-                  <Download className="w-4 h-4 text-slate-600" />
-                  <span>{t.export}</span>
+                  <Plus size={24} />
                 </button>
-              )}
-            </motion.div>
+              </div>
 
-            <motion.div
+              <Constellation 
+                places={places} 
+                onPlaceClick={handlePlaceClick} 
+                activePlaceId={selectedPlace?.id || null} 
+              />
+            </motion.div>
+          )}
+
+          {mode === 'discover' && (
+            <motion.div 
+              key="discover"
+              initial={{ x: 20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -20, opacity: 0 }}
+              className="absolute inset-0 p-8 md:p-12 overflow-y-auto"
+            >
+              <div className="max-w-6xl mx-auto">
+                <header className="mb-16 flex justify-between items-end">
+                  <div>
+                    <h1 className="text-6xl font-serif italic mb-4">Discovery</h1>
+                    <p className="text-sm font-mono uppercase tracking-[0.3em] opacity-40">Cinema & Literature Mapping</p>
+                  </div>
+                  <div className="hidden md:block text-right">
+                    <p className="text-[10px] font-mono opacity-30 uppercase mb-1">System Status</p>
+                    <p className="text-xs font-mono text-trippin-accent">GRID_ACTIVE_024</p>
+                  </div>
+                </header>
+
+                <TrippinPick 
+                  language={language}
+                  onPick={handlePick}
+                  onSelectWork={handleSelectWork}
+                  recommendedWorks={MOCK_WORKS}
+                />
+              </div>
+            </motion.div>
+          )}
+
+          {mode === 'work-detail' && selectedWork && (
+            <motion.div 
+              key="work-detail"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.02 }}
+              className="absolute inset-0 z-20 bg-trippin-bg"
+            >
+              <WorkDetail 
+                language={language}
+                work={selectedWork} 
+                onBack={() => setMode('discover')} 
+                onCheckIn={(point) => setActiveCheckInPoint(point)}
+              />
+            </motion.div>
+          )}
+
+          {mode === 'journal' && (
+            <motion.div 
+              key="journal"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-              className="absolute bottom-24 right-8 flex flex-row items-center gap-2 bg-white/90 backdrop-blur-2xl border border-white/60 rounded-full px-4 py-2 shadow-[0_20px_40px_rgba(0,0,0,0.1)] pointer-events-auto z-50"
+              exit={{ y: -20, opacity: 0 }}
+              className="absolute inset-0 p-8 md:p-12 overflow-y-auto"
             >
-              <button 
-                onClick={() => setIsPlaying(!isPlaying)} 
-                className={`p-2 transition-colors rounded-full ${isPlaying ? 'text-yellow-500 bg-yellow-50 hover:bg-yellow-100' : 'text-slate-400 hover:text-slate-800 hover:bg-slate-100'}`}
-                title={isPlaying ? t.pauseTour : t.playTour}
-              >
-                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-              </button>
-              <div className="w-px h-6 bg-slate-200 mx-1" />
-              <button onClick={() => setIsManageOpen(true)} className="p-2 text-slate-400 hover:text-slate-800 transition-colors hover:bg-slate-100 rounded-full" title={t.managePlaces}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-              </button>
-              <button onClick={handleShare} className="p-2 text-slate-400 hover:text-slate-800 transition-colors hover:bg-slate-100 rounded-full" title={t.shareMap}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-              </button>
-              <button onClick={handleThemeToggle} className="p-2 text-slate-400 hover:text-slate-800 transition-colors hover:bg-slate-100 rounded-full" title={t.toggleTheme}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
-              </button>
-              <button onClick={() => setIsSettingsOpen(true)} className="p-2 text-slate-400 hover:text-slate-800 transition-colors hover:bg-slate-100 rounded-full" title={t.settings}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-              </button>
-              <button onClick={() => setIsProfileOpen(true)} className="p-2 text-slate-400 hover:text-slate-800 transition-colors hover:bg-slate-100 rounded-full" title={t.profile}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              </button>
+              <div className="max-w-4xl mx-auto">
+                <header className="mb-16">
+                  <h1 className="text-6xl font-serif italic mb-4">Journal</h1>
+                  <p className="text-sm font-mono uppercase tracking-[0.3em] opacity-40">Chronological Records</p>
+                </header>
+
+                <Timeline 
+                  places={places} 
+                  activePlaceId={selectedPlace?.id || null} 
+                  onSelectPlace={handlePlaceClick} 
+                  language={language}
+                />
+              </div>
             </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
 
-            <Timeline 
-              places={places} 
-              activePlaceId={selectedPlace?.id || null} 
-              onSelectPlace={handlePlaceClick} 
-              language={language}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
+      {/* Modals & Overlays */}
       <AnimatePresence>
-        {selectedPlace && mode === 'explore' && (
+        {selectedPlace && mode === 'atlas' && (
           <CityProfileCard 
             place={selectedPlace} 
             language={language}
             onClose={() => setSelectedPlace(null)} 
+          />
+        )}
+        {activeCheckInPoint && selectedWork && (
+          <CheckInModal
+            language={language}
+            work={selectedWork}
+            point={activeCheckInPoint}
+            onClose={() => setActiveCheckInPoint(null)}
+            onFinish={handleCheckInFinish}
           />
         )}
       </AnimatePresence>
@@ -335,15 +425,36 @@ export default function App() {
           showBuildings={showBuildings}
           setShowBuildings={setShowBuildings}
         />
-        <Toaster position="top-center" />
       </div>
-
-      <style>{`
-        @media print {
-          body { background-color: #030712 !important; -webkit-print-color-adjust: exact; }
-          .print\\:hidden { display: none !important; }
-        }
-      `}</style>
     </div>
+  );
+}
+
+interface NavButtonProps {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+}
+
+const NavButton: React.FC<NavButtonProps> = ({ active, onClick, icon, label }) => {
+  return (
+    <button 
+      onClick={onClick}
+      className={`relative group flex flex-col items-center gap-1 transition-all ${active ? 'text-trippin-accent' : 'text-trippin-muted hover:text-trippin-ink'}`}
+    >
+      <div className={`p-2 rounded-lg transition-colors ${active ? 'bg-trippin-accent/10' : 'hover:bg-trippin-surface'}`}>
+        {icon}
+      </div>
+      <span className="text-[9px] font-mono uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
+        {label}
+      </span>
+      {active && (
+        <motion.div 
+          layoutId="nav-active"
+          className="absolute -right-[21px] md:-right-[21px] w-1 h-8 bg-trippin-accent rounded-l-full"
+        />
+      )}
+    </button>
   );
 }

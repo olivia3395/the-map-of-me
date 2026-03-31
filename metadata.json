@@ -1,5 +1,5 @@
 {
-  "name": "The Map of Me",
-  "description": "A cinematic world map that transforms the places you have been into a glowing constellation of memory.",
-  "requestFramePermissions": []
+  "name": "Trippin",
+  "description": "Discover the soul of your journey through movies and books. Check-in at iconic filming locations and record your travel reflections.",
+  "requestFramePermissions": ["camera", "geolocation"]
 }

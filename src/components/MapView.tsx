@@ -106,10 +106,10 @@ export default function MapView({ places, activePlaceId, onPlaceClick, position,
               id="route-line"
               type="line"
               paint={{
-                'line-color': '#fde047',
-                'line-width': 3,
+                'line-color': '#f27d26',
+                'line-width': 2,
                 'line-dasharray': [2, 2],
-                'line-opacity': 0.8
+                'line-opacity': 0.6
               }}
             />
           </Source>
@@ -129,10 +129,9 @@ export default function MapView({ places, activePlaceId, onPlaceClick, position,
             }}
           >
             <div className="relative flex flex-col items-center justify-center cursor-pointer group">
-              <div className={`w-3 h-3 rounded-full z-10 group-hover:scale-150 transition-transform ${isActive ? 'bg-yellow-300 shadow-[0_0_20px_#fde047]' : 'bg-white shadow-[0_0_15px_#ffffff]'}`}></div>
-              <div className={`absolute w-8 h-8 rounded-full opacity-40 animate-ping ${isActive ? 'bg-yellow-400' : 'bg-[var(--color-gold)]'}`}></div>
-              <div className={`absolute w-12 h-12 rounded-full opacity-20 animate-pulse ${isActive ? 'bg-yellow-500' : 'bg-[var(--color-gold)]'}`}></div>
-              <div className={`absolute top-4 whitespace-nowrap text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded backdrop-blur-sm transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} ${mode === 'overview' ? 'text-white' : 'text-slate-900 bg-white/50'}`}>
+              <div className={`w-2 h-2 rounded-sm z-10 group-hover:scale-150 transition-transform ${isActive ? 'bg-[#f27d26] shadow-[0_0_20px_#f27d26]' : 'bg-white shadow-[0_0_15px_#ffffff]'}`}></div>
+              <div className={`absolute w-6 h-6 rounded-sm opacity-40 animate-ping ${isActive ? 'bg-[#f27d26]' : 'bg-white'}`}></div>
+              <div className={`absolute top-4 whitespace-nowrap text-[9px] font-mono font-bold tracking-widest uppercase px-2 py-0.5 rounded backdrop-blur-sm transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} ${mode === 'overview' ? 'text-white' : 'text-white bg-black/50'}`}>
                 {place.cityName}
               </div>
             </div>
