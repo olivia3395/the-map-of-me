@@ -1,5 +1,5 @@
 {
-  "name": "Trippin",
+  "name": "Map of Me",
   "description": "Discover the soul of your journey through movies and books. Check-in at iconic filming locations and record your travel reflections.",
   "requestFramePermissions": ["camera", "geolocation"]
 }

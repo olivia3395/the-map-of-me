@@ -6,12 +6,12 @@
   --font-serif: "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  --color-trippin-bg: #0a0a0a;
-  --color-trippin-ink: #ffffff;
-  --color-trippin-accent: #f27d26;
-  --color-trippin-muted: #666666;
-  --color-trippin-border: rgba(255, 255, 255, 0.1);
-  --color-trippin-surface: #141414;
+  --color-trippin-bg: #fdfaf5;
+  --color-trippin-ink: #1a1a1a;
+  --color-trippin-accent: #d97706;
+  --color-trippin-muted: #737373;
+  --color-trippin-border: rgba(0, 0, 0, 0.1);
+  --color-trippin-surface: #f5f0e6;
   --color-trippin-warm-bg: #fdfaf5;
   --color-trippin-warm-ink: #1a1a1a;
   --color-trippin-warm-border: rgba(0, 0, 0, 0.1);
@@ -38,10 +38,10 @@ h1, h2, h3, h4, h5, h6 {
   width: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-trippin-bg);
+  background: var(--color-trippin-warm-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-trippin-border);
+  background: var(--color-trippin-warm-border);
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-trippin-muted);
