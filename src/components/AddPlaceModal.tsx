@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, MapPin, Calendar, Image as ImageIcon, Tag, Loader2 } from "lucide-react";
 import { Place } from "../types";
