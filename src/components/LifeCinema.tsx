@@ -6,9 +6,11 @@ import {
   RotateCcw, List, Settings2, ArrowRight
 } from "lucide-react";
 import { Place } from "../types";
+import { t as translations, Language } from "../i18n";
 
 interface LifeCinemaProps {
   places: Place[];
+  language: Language;
   onClose: () => void;
   onSceneChange: (place: Place) => void;
 }
@@ -16,7 +18,8 @@ interface LifeCinemaProps {
 type CinemaState = "lobby" | "opening" | "scene" | "transition" | "credits";
 type CutType = "chronological" | "geographical" | "mood" | "chapters";
 
-export default function LifeCinema({ places, onClose, onSceneChange }: LifeCinemaProps) {
+export default function LifeCinema({ places, language, onClose, onSceneChange }: LifeCinemaProps) {
+  const t = translations[language];
   const [state, setState] = useState<CinemaState>("lobby");
   const [cutType, setCutType] = useState<CutType>("chronological");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -91,7 +94,8 @@ export default function LifeCinema({ places, onClose, onSceneChange }: LifeCinem
     const tz1 = Math.round(p1.lng / 15);
     const tz2 = Math.round(p2.lng / 15);
     const diff = tz2 - tz1;
-    return diff === 0 ? "Same Timezone" : `${diff > 0 ? '+' : ''}${diff} Hours`;
+    if (diff === 0) return language === 'en' ? "Same Timezone" : "相同时区";
+    return `${diff > 0 ? '+' : ''}${diff} ${language === 'en' ? 'Hours' : '小时'}`;
   };
 
   if (places.length === 0) return null;
@@ -110,22 +114,22 @@ export default function LifeCinema({ places, onClose, onSceneChange }: LifeCinem
         className="relative z-10 max-w-2xl"
       >
         <Clapperboard className="w-12 h-12 text-yellow-500 mx-auto mb-8 opacity-50" />
-        <h4 className="text-yellow-500/60 text-xs tracking-[0.5em] uppercase mb-4 font-bold">Now Screening</h4>
-        <h1 className="text-6xl md:text-8xl font-serif text-white mb-6 tracking-tight">The Atlas of {new Date().getFullYear()}</h1>
-        <p className="text-slate-400 text-lg font-light tracking-widest uppercase mb-12">A Cinematic Journey Through Your Geography</p>
+        <h4 className="text-yellow-500/60 text-xs tracking-[0.5em] uppercase mb-4 font-bold">{t.nowScreening}</h4>
+        <h1 className="text-6xl md:text-8xl font-serif text-white mb-6 tracking-tight">{language === 'en' ? `The Atlas of ${new Date().getFullYear()}` : `${new Date().getFullYear()} 记忆图鉴`}</h1>
+        <p className="text-slate-400 text-lg font-light tracking-widest uppercase mb-12">{t.subtitle}</p>
         
         <div className="grid grid-cols-3 gap-8 mb-16 border-y border-white/10 py-8">
           <div>
             <div className="text-2xl font-serif text-white mb-1">{sortedPlaces.length}</div>
-            <div className="text-[10px] text-slate-500 uppercase tracking-widest">Scenes</div>
+            <div className="text-[10px] text-slate-500 uppercase tracking-widest">{t.scenes}</div>
           </div>
           <div>
             <div className="text-2xl font-serif text-white mb-1">{new Set(places.map(p => p.country)).size}</div>
-            <div className="text-[10px] text-slate-500 uppercase tracking-widest">Regions</div>
+            <div className="text-[10px] text-slate-500 uppercase tracking-widest">{t.regions}</div>
           </div>
           <div>
             <div className="text-2xl font-serif text-white mb-1">{calculateDistance(sortedPlaces[0], sortedPlaces[sortedPlaces.length-1])}km</div>
-            <div className="text-[10px] text-slate-500 uppercase tracking-widest">Total Span</div>
+            <div className="text-[10px] text-slate-500 uppercase tracking-widest">{t.totalSpan}</div>
           </div>
         </div>
 
@@ -134,18 +138,18 @@ export default function LifeCinema({ places, onClose, onSceneChange }: LifeCinem
             onClick={() => setState("opening")}
             className="group relative px-12 py-5 bg-white text-slate-950 rounded-full font-bold tracking-[0.2em] uppercase text-sm hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)]"
           >
-            Start Screening
+            {t.startScreening}
           </button>
           
           <div className="flex items-center gap-4 text-[10px] text-slate-500 uppercase tracking-widest">
-            <span>Select Cut:</span>
+            <span>{t.selectCut}</span>
             {(["chronological", "geographical", "mood", "chapters"] as CutType[]).map(type => (
               <button 
                 key={type}
                 onClick={() => setCutType(type)}
                 className={`transition-colors hover:text-white ${cutType === type ? 'text-yellow-500' : ''}`}
               >
-                {type}
+                {t[type as keyof typeof t]}
               </button>
             ))}
           </div>
@@ -168,9 +172,9 @@ export default function LifeCinema({ places, onClose, onSceneChange }: LifeCinem
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 2, ease: "easeOut" }}
       >
-        <h2 className="text-white font-serif text-4xl md:text-6xl tracking-[0.2em] mb-4">A LIFE IN MOTION</h2>
+        <h2 className="text-white font-serif text-4xl md:text-6xl tracking-[0.2em] mb-4">{t.aLifeInMotion}</h2>
         <div className="w-24 h-px bg-yellow-500/50 mx-auto mb-8" />
-        <p className="text-slate-400 font-light tracking-[0.4em] uppercase text-xs">Presented by Your Memories</p>
+        <p className="text-slate-400 font-light tracking-[0.4em] uppercase text-xs">{t.presentedBy}</p>
       </motion.div>
     </motion.div>
   );
@@ -196,7 +200,7 @@ export default function LifeCinema({ places, onClose, onSceneChange }: LifeCinem
             {currentIndex + 1}
           </div>
           <div>
-            <h4 className="text-yellow-500/80 text-[10px] tracking-[0.4em] uppercase font-bold">Scene {currentIndex + 1}</h4>
+            <h4 className="text-yellow-500/80 text-[10px] tracking-[0.4em] uppercase font-bold">{t.scene} {currentIndex + 1}</h4>
             <h2 className="text-white font-serif text-2xl tracking-wide">{currentPlace.cityName}</h2>
           </div>
         </div>
@@ -229,11 +233,11 @@ export default function LifeCinema({ places, onClose, onSceneChange }: LifeCinem
               {currentPlace.cityName}
             </h1>
             <p className="text-xl md:text-3xl text-slate-200 font-light leading-relaxed italic max-w-2xl mx-auto">
-              "{currentPlace.curatedDescription?.split('.')[0]}."
+              "{language === 'en' ? currentPlace.curatedDescription?.split('.')[0] : (currentPlace.curatedDescriptionZh || currentPlace.curatedDescription)?.split('。')[0]}."
             </p>
             
             <div className="mt-12 flex flex-wrap justify-center gap-3">
-              {currentPlace.highlights?.map((h, i) => (
+              {(language === 'en' ? currentPlace.highlights : (currentPlace.highlightsZh || currentPlace.highlights))?.map((h, i) => (
                 <span key={i} className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-[10px] text-slate-400 uppercase tracking-widest">
                   {h}
                 </span>
@@ -272,7 +276,7 @@ export default function LifeCinema({ places, onClose, onSceneChange }: LifeCinem
               className={`flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] uppercase tracking-widest font-bold transition-all ${isAutoPlay ? 'bg-white/10 border-white/20 text-yellow-500' : 'border-white/5 text-white/20'}`}
             >
               <Settings2 className="w-4 h-4" />
-              {isAutoPlay ? "Autoplay On" : "Manual Mode"}
+              {isAutoPlay ? (language === 'en' ? "Autoplay On" : "自动播放开启") : (language === 'en' ? "Manual Mode" : "手动模式")}
             </button>
           </div>
         </div>
@@ -315,7 +319,7 @@ export default function LifeCinema({ places, onClose, onSceneChange }: LifeCinem
         >
           <div className="flex items-center justify-center gap-12 mb-12">
             <div className="text-right">
-              <h4 className="text-slate-500 text-[10px] uppercase tracking-widest mb-2">Departure</h4>
+              <h4 className="text-slate-500 text-[10px] uppercase tracking-widest mb-2">{t.departure}</h4>
               <h2 className="text-white font-serif text-3xl">{transitionData.from.cityName}</h2>
             </div>
             <motion.div 
@@ -325,7 +329,7 @@ export default function LifeCinema({ places, onClose, onSceneChange }: LifeCinem
               <ArrowRight className="w-8 h-8" />
             </motion.div>
             <div className="text-left">
-              <h4 className="text-slate-500 text-[10px] uppercase tracking-widest mb-2">Arrival</h4>
+              <h4 className="text-slate-500 text-[10px] uppercase tracking-widest mb-2">{t.arrival}</h4>
               <h2 className="text-white font-serif text-3xl">{transitionData.to.cityName}</h2>
             </div>
           </div>
@@ -334,22 +338,24 @@ export default function LifeCinema({ places, onClose, onSceneChange }: LifeCinem
             <div className="flex flex-col items-center gap-2">
               <Compass className="w-5 h-5 text-slate-600" />
               <span className="text-white font-serif text-xl">{distance}km</span>
-              <span className="text-[8px] text-slate-500 uppercase tracking-widest">Distance</span>
+              <span className="text-[8px] text-slate-500 uppercase tracking-widest">{t.distance}</span>
             </div>
             <div className="flex flex-col items-center gap-2">
               <Clock className="w-5 h-5 text-slate-600" />
               <span className="text-white font-serif text-xl">{tzDiff}</span>
-              <span className="text-[8px] text-slate-500 uppercase tracking-widest">Time Shift</span>
+              <span className="text-[8px] text-slate-500 uppercase tracking-widest">{t.timeShift}</span>
             </div>
             <div className="flex flex-col items-center gap-2">
               <Globe className="w-5 h-5 text-slate-600" />
-              <span className="text-white font-serif text-xl">Trans-Global</span>
-              <span className="text-[8px] text-slate-500 uppercase tracking-widest">Route Type</span>
+              <span className="text-white font-serif text-xl">{t.transGlobal}</span>
+              <span className="text-[8px] text-slate-500 uppercase tracking-widest">{t.routeType}</span>
             </div>
           </div>
 
           <p className="text-slate-400 font-serif italic text-xl">
-            "Leaving the echoes of {transitionData.from.cityName} behind, we follow the horizon toward {transitionData.to.cityName}."
+            {language === 'en' 
+              ? `"Leaving the echoes of ${transitionData.from.cityName} behind, we follow the horizon toward ${transitionData.to.cityName}."`
+              : `"告别${transitionData.from.cityName}的回响，我们追随地平线，奔向${transitionData.to.cityName}。"`}
           </p>
         </motion.div>
       </motion.div>
@@ -365,27 +371,27 @@ export default function LifeCinema({ places, onClose, onSceneChange }: LifeCinem
         initial={{ y: 100 }} animate={{ y: -100 }} transition={{ duration: 15, base: "linear" }}
         className="max-w-xl py-20"
       >
-        <h2 className="text-white font-serif text-5xl mb-16">FIN</h2>
+        <h2 className="text-white font-serif text-5xl mb-16">{t.fin}</h2>
         
         <div className="space-y-12 mb-20">
           <div>
-            <h4 className="text-yellow-500 text-[10px] uppercase tracking-[0.4em] mb-4">Featured Locations</h4>
+            <h4 className="text-yellow-500 text-[10px] uppercase tracking-[0.4em] mb-4">{t.featuredLocations}</h4>
             {sortedPlaces.map(p => (
               <div key={p.id} className="text-white font-serif text-xl mb-2">{p.cityName}, {p.country}</div>
             ))}
           </div>
           
           <div>
-            <h4 className="text-yellow-500 text-[10px] uppercase tracking-[0.4em] mb-4">Thematic Elements</h4>
+            <h4 className="text-yellow-500 text-[10px] uppercase tracking-[0.4em] mb-4">{t.thematicElements}</h4>
             <div className="text-white font-serif text-xl">
               {Array.from(new Set(places.map(p => p.tag).filter(Boolean))).join(" • ")}
             </div>
           </div>
 
           <div>
-            <h4 className="text-yellow-500 text-[10px] uppercase tracking-[0.4em] mb-4">Closing Thought</h4>
+            <h4 className="text-yellow-500 text-[10px] uppercase tracking-[0.4em] mb-4">{t.closingThought}</h4>
             <p className="text-slate-400 font-serif italic text-2xl">
-              "Every coordinate is a heartbeat, every map a story yet to be fully told."
+              "{t.closingQuote}"
             </p>
           </div>
         </div>
@@ -396,13 +402,13 @@ export default function LifeCinema({ places, onClose, onSceneChange }: LifeCinem
             className="flex items-center gap-3 text-white/50 hover:text-white transition-colors uppercase tracking-[0.3em] text-xs"
           >
             <RotateCcw className="w-4 h-4" />
-            Rewatch Film
+            {t.rewatchFilm}
           </button>
           <button 
             onClick={onClose}
             className="px-8 py-3 border border-white/20 rounded-full text-white/80 hover:bg-white hover:text-black transition-all uppercase tracking-[0.2em] text-[10px] font-bold"
           >
-            Return to Atlas
+            {t.returnToAtlas}
           </button>
         </div>
       </motion.div>
@@ -432,7 +438,7 @@ export default function LifeCinema({ places, onClose, onSceneChange }: LifeCinem
               className="absolute top-0 right-0 bottom-0 w-full max-w-md bg-slate-900 border-l border-white/10 z-[120] p-8 pointer-events-auto"
             >
               <div className="flex justify-between items-center mb-12">
-                <h2 className="text-2xl font-serif">Chapters</h2>
+                <h2 className="text-2xl font-serif">{t.chaptersTitle}</h2>
                 <button onClick={() => setShowSceneList(false)} className="text-slate-400 hover:text-white">
                   <X className="w-6 h-6" />
                 </button>

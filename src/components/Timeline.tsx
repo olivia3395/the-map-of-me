@@ -1,13 +1,15 @@
 import { motion } from "motion/react";
 import { Place } from "../types";
+import { t } from "../i18n";
 
 interface TimelineProps {
   places: Place[];
   activePlaceId: string | null;
   onSelectPlace: (place: Place) => void;
+  language: 'en' | 'zh';
 }
 
-export default function Timeline({ places, activePlaceId, onSelectPlace }: TimelineProps) {
+export default function Timeline({ places, activePlaceId, onSelectPlace, language }: TimelineProps) {
   if (places.length === 0) return null;
 
   const sortedPlaces = [...(places || [])].sort((a, b) => a.orderIndex - b.orderIndex);
@@ -70,7 +72,7 @@ export default function Timeline({ places, activePlaceId, onSelectPlace }: Timel
                 
                 {/* Year */}
                 <div className="absolute top-12 whitespace-nowrap text-[10px] text-slate-400 tracking-wider font-semibold">
-                  {place.year || `Stop ${index + 1}`}
+                  {place.year || `${t[language].stop} ${index + 1}`}
                 </div>
               </button>
             );

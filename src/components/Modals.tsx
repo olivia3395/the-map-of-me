@@ -2,6 +2,20 @@ import React from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Trash2, MapPin, Globe, Route, Building2, Navigation } from "lucide-react";
 import { Place } from "../types";
+import { t } from "../i18n";
+
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  language: 'en' | 'zh';
+  places?: Place[];
+  setPlaces?: (places: Place[]) => void;
+  onSelectPlace?: (place: Place) => void;
+  showRoute?: boolean;
+  setShowRoute?: (show: boolean) => void;
+  showBuildings?: boolean;
+  setShowBuildings?: (show: boolean) => void;
+}
 
 const ModalWrapper = ({ isOpen, onClose, title, children }: any) => (
   <AnimatePresence>
@@ -38,15 +52,15 @@ const ModalWrapper = ({ isOpen, onClose, title, children }: any) => (
   </AnimatePresence>
 );
 
-export function ManagePlacesModal({ isOpen, onClose, places, setPlaces, onSelectPlace }: any) {
+export function ManagePlacesModal({ isOpen, onClose, places, setPlaces, onSelectPlace, language }: ModalProps) {
   const handleDelete = (id: string) => {
-    setPlaces(places.filter((p: any) => p.id !== id));
+    setPlaces?.(places?.filter((p: any) => p.id !== id) || []);
   };
 
   return (
-    <ModalWrapper isOpen={isOpen} onClose={onClose} title="Manage Places">
+    <ModalWrapper isOpen={isOpen} onClose={onClose} title={t[language].managePlaces}>
       {(places || []).length === 0 ? (
-        <p className="text-slate-500 text-center py-4">No places added yet.</p>
+        <p className="text-slate-500 text-center py-4">{t[language].noPlaces}</p>
       ) : (
         <div className="space-y-3">
           {(places || []).map((place: any) => (
@@ -76,7 +90,7 @@ export function ManagePlacesModal({ isOpen, onClose, places, setPlaces, onSelect
   );
 }
 
-export function ProfileModal({ isOpen, onClose, places }: any) {
+export function ProfileModal({ isOpen, onClose, places, language }: ModalProps) {
   const uniqueCountries = new Set((places || []).map((p: any) => p.country)).size;
 
   const calculateTotalDistance = (placesList: any[]) => {
@@ -99,29 +113,29 @@ export function ProfileModal({ isOpen, onClose, places }: any) {
     return Math.round(total);
   };
 
-  const totalDistance = calculateTotalDistance(places);
+  const totalDistance = calculateTotalDistance(places || []);
 
   return (
-    <ModalWrapper isOpen={isOpen} onClose={onClose} title="Traveler Profile">
+    <ModalWrapper isOpen={isOpen} onClose={onClose} title={t[language].travelerProfile}>
       <div className="flex flex-col items-center py-6">
         <div className="w-24 h-24 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-yellow-500/20">
           <span className="text-4xl text-white font-serif">M</span>
         </div>
-        <h3 className="text-2xl font-serif font-bold text-slate-800 mb-2">My Journey</h3>
+        <h3 className="text-2xl font-serif font-bold text-slate-800 mb-2">{t[language].myJourney}</h3>
         <p className="text-slate-500 text-sm mb-8 text-center px-4">
-          Documenting a life in places, one coordinate at a time.
+          {t[language].documentingLife}
         </p>
 
         <div className="grid grid-cols-2 gap-4 w-full">
           <div className="bg-slate-50 rounded-2xl p-4 flex flex-col items-center justify-center border border-slate-100 shadow-sm">
             <MapPin className="w-6 h-6 text-yellow-600 mb-2" />
             <span className="text-3xl font-bold text-slate-800">{(places || []).length}</span>
-            <span className="text-xs text-slate-500 uppercase tracking-wider mt-1">Places</span>
+            <span className="text-xs text-slate-500 uppercase tracking-wider mt-1">{t[language].places}</span>
           </div>
           <div className="bg-slate-50 rounded-2xl p-4 flex flex-col items-center justify-center border border-slate-100 shadow-sm">
             <Globe className="w-6 h-6 text-blue-500 mb-2" />
             <span className="text-3xl font-bold text-slate-800">{uniqueCountries}</span>
-            <span className="text-xs text-slate-500 uppercase tracking-wider mt-1">Countries</span>
+            <span className="text-xs text-slate-500 uppercase tracking-wider mt-1">{t[language].countries}</span>
           </div>
         </div>
 
@@ -130,7 +144,7 @@ export function ProfileModal({ isOpen, onClose, places }: any) {
             <div className="p-2 bg-emerald-100 text-emerald-600 rounded-full">
               <Navigation className="w-5 h-5" />
             </div>
-            <span className="font-bold text-slate-700">Total Distance</span>
+            <span className="font-bold text-slate-700">{t[language].totalDistance}</span>
           </div>
           <div className="text-right">
             <span className="text-2xl font-bold text-slate-800">{totalDistance.toLocaleString()}</span>
@@ -142,9 +156,9 @@ export function ProfileModal({ isOpen, onClose, places }: any) {
   );
 }
 
-export function SettingsModal({ isOpen, onClose, showRoute, setShowRoute, showBuildings, setShowBuildings }: any) {
+export function SettingsModal({ isOpen, onClose, showRoute, setShowRoute, showBuildings, setShowBuildings, language }: ModalProps) {
   return (
-    <ModalWrapper isOpen={isOpen} onClose={onClose} title="Map Settings">
+    <ModalWrapper isOpen={isOpen} onClose={onClose} title={t[language].mapSettings}>
       <div className="space-y-4">
         <div className="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100">
           <div className="flex items-center gap-3">
@@ -152,8 +166,8 @@ export function SettingsModal({ isOpen, onClose, showRoute, setShowRoute, showBu
               <Route className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-slate-800 text-sm">Show Route Lines</h4>
-              <p className="text-xs text-slate-500">Connect places with a dashed line</p>
+              <h4 className="font-bold text-slate-800 text-sm">{t[language].showRouteLines}</h4>
+              <p className="text-xs text-slate-500">{t[language].connectPlaces}</p>
             </div>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
@@ -161,7 +175,7 @@ export function SettingsModal({ isOpen, onClose, showRoute, setShowRoute, showBu
               type="checkbox"
               className="sr-only peer"
               checked={showRoute}
-              onChange={(e) => setShowRoute(e.target.checked)}
+              onChange={(e) => setShowRoute?.(e.target.checked)}
             />
             <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
           </label>
@@ -173,8 +187,8 @@ export function SettingsModal({ isOpen, onClose, showRoute, setShowRoute, showBu
               <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-slate-800 text-sm">3D Buildings</h4>
-              <p className="text-xs text-slate-500">Show 3D city buildings</p>
+              <h4 className="font-bold text-slate-800 text-sm">{t[language].threeDBuildings}</h4>
+              <p className="text-xs text-slate-500">{t[language].showThreeDBuildings}</p>
             </div>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
@@ -182,7 +196,7 @@ export function SettingsModal({ isOpen, onClose, showRoute, setShowRoute, showBu
               type="checkbox"
               className="sr-only peer"
               checked={showBuildings}
-              onChange={(e) => setShowBuildings(e.target.checked)}
+              onChange={(e) => setShowBuildings?.(e.target.checked)}
             />
             <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
           </label>

@@ -2,10 +2,12 @@ import React from "react";
 import { motion } from "motion/react";
 import { X } from "lucide-react";
 import { Place } from "../types";
+import { t } from "../i18n";
 
 interface CityProfileCardProps {
   place: Place;
   onClose: () => void;
+  language: 'en' | 'zh';
 }
 
 const formatCoords = (lat: number, lng: number) => {
@@ -19,22 +21,24 @@ const formatTimeZone = (lng: number) => {
   return `UTC${offset >= 0 ? '+' : ''}${offset}:00`;
 };
 
-const getNotableFigures = (city: string) => {
-  const figures: Record<string, string> = {
-    'new york': 'Walt Whitman, Jay-Z, Eleanor Roosevelt',
-    'paris': 'Victor Hugo, Coco Chanel, Marie Curie',
-    'london': 'Charles Dickens, Alan Turing, Adele',
-    'tokyo': 'Hayao Miyazaki, Akira Kurosawa',
-    'beijing': 'Lao She, Lu Xun',
-    'shanghai': 'Eileen Chang, Yao Ming',
-    'san francisco': 'Jack London, Bruce Lee',
-    'los angeles': 'Marilyn Monroe, Kobe Bryant',
-    'rome': 'Julius Caesar, Federico Fellini',
+const getNotableFigures = (city: string, language: 'en' | 'zh') => {
+  const figures: Record<string, { en: string, zh: string }> = {
+    'new york': { en: 'Walt Whitman, Jay-Z, Eleanor Roosevelt', zh: '沃尔特·惠特曼, Jay-Z, 埃莉诺·罗斯福' },
+    'paris': { en: 'Victor Hugo, Coco Chanel, Marie Curie', zh: '维克多·雨果, 可可·香奈儿, 玛丽·居里' },
+    'london': { en: 'Charles Dickens, Alan Turing, Adele', zh: '查尔斯·狄更斯, 艾伦·图灵, 阿黛尔' },
+    'tokyo': { en: 'Hayao Miyazaki, Akira Kurosawa', zh: '宫崎骏, 黑泽明' },
+    'beijing': { en: 'Lao She, Lu Xun', zh: '老舍, 鲁迅' },
+    'shanghai': { en: 'Eileen Chang, Yao Ming', zh: '张爱玲, 姚明' },
+    'san francisco': { en: 'Jack London, Bruce Lee', zh: '杰克·伦敦, 李小龙' },
+    'los angeles': { en: 'Marilyn Monroe, Kobe Bryant', zh: '玛丽莲·梦露, 科比·布莱恩特' },
+    'rome': { en: 'Julius Caesar, Federico Fellini', zh: '尤利乌斯·凯撒, 费德里科·费里尼' },
   };
-  return figures[city.toLowerCase()] || 'Local historical & cultural icons';
+  const entry = figures[city.toLowerCase()];
+  if (entry) return entry[language];
+  return language === 'en' ? 'Local historical & cultural icons' : '当地历史文化偶像';
 };
 
-export default function CityProfileCard({ place, onClose }: CityProfileCardProps) {
+export default function CityProfileCard({ place, onClose, language }: CityProfileCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, x: -20, scale: 0.95 }}
@@ -52,7 +56,7 @@ export default function CityProfileCard({ place, onClose }: CityProfileCardProps
           <div className="flex justify-between items-start mb-5">
             <div>
               <div className="text-[8px] uppercase tracking-[0.3em] text-yellow-500/80 mb-2 font-bold">
-                Place View
+                {t[language].placeView}
               </div>
               <h3 className="text-xl font-serif text-yellow-400 tracking-wide leading-none mb-1.5">
                 {place.cityName}
@@ -72,24 +76,24 @@ export default function CityProfileCard({ place, onClose }: CityProfileCardProps
           {/* Data List */}
           <div className="space-y-3">
             <div className="flex justify-between items-end border-b border-slate-700/50 pb-1.5">
-              <span className="text-[9px] uppercase tracking-widest text-slate-500">Category</span>
-              <span className="text-xs font-mono text-slate-200">{place.tag || 'Exploration'}</span>
+              <span className="text-[9px] uppercase tracking-widest text-slate-500">{t[language].category}</span>
+              <span className="text-xs font-mono text-slate-200">{place.tag || (language === 'en' ? 'Exploration' : '探索')}</span>
             </div>
             
             <div className="flex justify-between items-end border-b border-slate-700/50 pb-1.5">
-              <span className="text-[9px] uppercase tracking-widest text-slate-500">Coordinates</span>
+              <span className="text-[9px] uppercase tracking-widest text-slate-500">{t[language].coordinates}</span>
               <span className="text-xs font-mono text-slate-200">{formatCoords(place.lat, place.lng)}</span>
             </div>
 
             <div className="flex justify-between items-end border-b border-slate-700/50 pb-1.5">
-              <span className="text-[9px] uppercase tracking-widest text-slate-500">Time Zone</span>
+              <span className="text-[9px] uppercase tracking-widest text-slate-500">{t[language].timeZone}</span>
               <span className="text-xs font-mono text-slate-200">{formatTimeZone(place.lng)}</span>
             </div>
 
             <div className="pt-1">
-              <span className="block text-[9px] uppercase tracking-widest text-slate-500 mb-1.5">Notable Figures</span>
+              <span className="block text-[9px] uppercase tracking-widest text-slate-500 mb-1.5">{t[language].notableFigures}</span>
               <span className="block text-xs text-slate-300 font-serif italic leading-relaxed">
-                {getNotableFigures(place.cityName)}
+                {getNotableFigures(place.cityName, language)}
               </span>
             </div>
           </div>

@@ -11,5 +11,7 @@ export interface Place {
   orderIndex: number;
   curatedImage: string;
   curatedDescription: string;
+  curatedDescriptionZh?: string;
   highlights: string[];
+  highlightsZh?: string[];
 }
