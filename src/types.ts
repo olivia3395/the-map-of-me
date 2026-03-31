@@ -1,6 +1,18 @@
+export interface CulturalItem {
+  title: string;
+  titleZh?: string;
+  location?: string;
+  locationZh?: string;
+  genre?: string;
+  genreZh?: string;
+  summary?: string;
+  summaryZh?: string;
+}
+
 export interface Place {
   id: string;
   cityName: string;
+  cityNameZh?: string;
   country: string;
   lat: number;
   lng: number;
@@ -9,6 +21,11 @@ export interface Place {
   imageUrl?: string;
   tag?: string;
   orderIndex: number;
+  culturalSummary?: string;
+  culturalSummaryZh?: string;
+  onScreen?: CulturalItem[];
+  onThePage?: CulturalItem[];
+  walkTheCity?: CulturalItem[];
 }
 
 export interface Work {
