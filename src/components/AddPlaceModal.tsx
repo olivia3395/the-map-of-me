@@ -30,15 +30,15 @@ export default function AddPlaceModal({ isOpen, onClose, onAdd, language }: AddP
       if (!apiKey) return null;
 
       const ai = new GoogleGenAI({ apiKey });
-      const prompt = `You are a cinematic storyteller. Generate a poetic, evocative description (exactly 2 sentences) for the city of ${city}, ${countryName}. 
-      Focus on its unique soul—the light, the architecture, or the hidden rhythm of its streets. 
-      Also, provide exactly 3 specific, world-famous landmarks or cultural symbols of this city.
+      const prompt = `You are a joyful storyteller. Generate one very happy, warm, and simple sentence (max 15 words) about the city of ${city}, ${countryName}. 
+      Focus on pure joy, a beautiful smile, or a sunny memory. 
+      Also, provide exactly 3 "Happy Highlights" (short phrases, max 3 words each) that make people smile about this city.
       Generate the response in BOTH English and Chinese.
       Return a JSON object with:
-      - description: English description
-      - description_zh: Chinese description
-      - highlights: Array of 3 English landmarks
-      - highlights_zh: Array of 3 Chinese landmarks`;
+      - description: English joyful sentence
+      - description_zh: Chinese joyful sentence
+      - highlights: Array of 3 English happy highlights
+      - highlights_zh: Array of 3 Chinese happy highlights`;
 
       const response = await ai.models.generateContent({
         model: "gemini-3.1-flash-preview",

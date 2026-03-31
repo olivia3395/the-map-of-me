@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { 
   Play, Pause, SkipForward, SkipBack, X, Film, 
   Clapperboard, MapPin, Globe, Clock, Compass, 
-  RotateCcw, List, Settings2, ArrowRight
+  RotateCcw, List, Settings2, ArrowRight, Sparkles
 } from "lucide-react";
 import { Place } from "../types";
 import { t as translations, Language } from "../i18n";
@@ -106,51 +106,59 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
   const Lobby = () => (
     <motion.div 
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="absolute inset-0 bg-[#020617] flex flex-col items-center justify-center p-8 text-center z-50"
+      className="absolute inset-0 bg-orange-50 flex flex-col items-center justify-center p-8 text-center z-50"
     >
-      <div className="absolute inset-0 overflow-hidden opacity-20">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-yellow-500/20 via-transparent to-transparent" />
+      <div className="absolute inset-0 overflow-hidden opacity-30">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-yellow-200 via-transparent to-transparent" />
       </div>
       
       <motion.div 
         initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }}
         className="relative z-10 max-w-2xl"
       >
-        <Clapperboard className="w-12 h-12 text-yellow-500 mx-auto mb-8 opacity-50" />
-        <h4 className="text-yellow-500/60 text-xs tracking-[0.5em] uppercase mb-4 font-bold">{t.nowScreening}</h4>
-        <h1 className="text-6xl md:text-8xl font-serif text-white mb-6 tracking-tight">{language === 'en' ? `The Atlas of ${new Date().getFullYear()}` : `${new Date().getFullYear()} 记忆图鉴`}</h1>
-        <p className="text-slate-400 text-lg font-light tracking-widest uppercase mb-12">{t.subtitle}</p>
+        <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg shadow-orange-100">
+          <Sparkles className="w-10 h-10 text-orange-400" />
+        </div>
+        <h4 className="text-orange-600/60 text-xs tracking-[0.3em] uppercase mb-4 font-bold">
+          {language === 'en' ? "Let's Relive the Joy" : "重温快乐时光"}
+        </h4>
+        <h1 className="text-5xl md:text-7xl font-serif text-slate-800 mb-6 tracking-tight">
+          {language === 'en' ? "My Happy Memories" : "我的快乐图鉴"}
+        </h1>
+        <p className="text-slate-500 text-lg font-light tracking-wide mb-12">
+          {language === 'en' ? "A collection of smiles and beautiful moments." : "收集笑容与美好的瞬间。"}
+        </p>
         
-        <div className="grid grid-cols-3 gap-8 mb-16 border-y border-white/10 py-8">
+        <div className="grid grid-cols-3 gap-8 mb-16 border-y border-orange-200 py-8">
           <div>
-            <div className="text-2xl font-serif text-white mb-1">{sortedPlaces.length}</div>
-            <div className="text-[10px] text-slate-500 uppercase tracking-widest">{t.scenes}</div>
+            <div className="text-2xl font-serif text-slate-800 mb-1">{sortedPlaces.length}</div>
+            <div className="text-[10px] text-slate-400 uppercase tracking-widest">{language === 'en' ? "Memories" : "回忆"}</div>
           </div>
           <div>
-            <div className="text-2xl font-serif text-white mb-1">{new Set(places.map(p => p.country)).size}</div>
-            <div className="text-[10px] text-slate-500 uppercase tracking-widest">{t.regions}</div>
+            <div className="text-2xl font-serif text-slate-800 mb-1">{new Set(places.map(p => p.country)).size}</div>
+            <div className="text-[10px] text-slate-400 uppercase tracking-widest">{language === 'en' ? "Countries" : "国家"}</div>
           </div>
           <div>
-            <div className="text-2xl font-serif text-white mb-1">{calculateDistance(sortedPlaces[0], sortedPlaces[sortedPlaces.length-1])}km</div>
-            <div className="text-[10px] text-slate-500 uppercase tracking-widest">{t.totalSpan}</div>
+            <div className="text-2xl font-serif text-slate-800 mb-1">{calculateDistance(sortedPlaces[0], sortedPlaces[sortedPlaces.length-1])}km</div>
+            <div className="text-[10px] text-slate-400 uppercase tracking-widest">{language === 'en' ? "Traveled" : "足迹"}</div>
           </div>
         </div>
 
         <div className="flex flex-col items-center gap-6">
           <button 
-            onClick={() => setState("opening")}
-            className="group relative px-12 py-5 bg-white text-slate-950 rounded-full font-bold tracking-[0.2em] uppercase text-sm hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+            onClick={() => setState("scene")}
+            className="group relative px-12 py-5 bg-orange-500 text-white rounded-full font-bold tracking-[0.1em] uppercase text-sm hover:scale-105 transition-all shadow-lg shadow-orange-200"
           >
-            {t.startScreening}
+            {language === 'en' ? "Let's Go!" : "出发吧！"}
           </button>
           
-          <div className="flex items-center gap-4 text-[10px] text-slate-500 uppercase tracking-widest">
-            <span>{t.selectCut}</span>
+          <div className="flex items-center gap-4 text-[10px] text-slate-400 uppercase tracking-widest">
+            <span>{language === 'en' ? "Choose a Vibe" : "选择氛围"}</span>
             {(["chronological", "geographical", "mood", "chapters"] as CutType[]).map(type => (
               <button 
                 key={type}
                 onClick={() => setCutType(type)}
-                className={`transition-colors hover:text-white ${cutType === type ? 'text-yellow-500' : ''}`}
+                className={`transition-colors hover:text-slate-800 ${cutType === type ? 'text-orange-600 font-bold underline underline-offset-4' : ''}`}
               >
                 {t[type as keyof typeof t]}
               </button>
@@ -159,45 +167,28 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
         </div>
       </motion.div>
 
-      <button onClick={onClose} className="absolute top-8 right-8 text-white/30 hover:text-white transition-colors">
+      <button onClick={onClose} className="absolute top-8 right-8 text-slate-300 hover:text-slate-800 transition-colors">
         <X className="w-6 h-6" />
       </button>
     </motion.div>
   );
 
-  const OpeningCredits = () => (
-    <motion.div 
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="absolute inset-0 bg-black flex flex-col items-center justify-center p-8 text-center z-50"
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 2, ease: "easeOut" }}
-      >
-        <h2 className="text-white font-serif text-4xl md:text-6xl tracking-[0.2em] mb-4">{t.aLifeInMotion}</h2>
-        <div className="w-24 h-px bg-yellow-500/50 mx-auto mb-8" />
-        <p className="text-slate-400 font-light tracking-[0.4em] uppercase text-xs">{t.presentedBy}</p>
-      </motion.div>
-    </motion.div>
-  );
-
   const MainScene = () => (
-    <div className="absolute inset-0 flex flex-col justify-between">
+    <div className="absolute inset-0 flex flex-col justify-between bg-white">
       <div className="absolute inset-0 overflow-hidden">
         <motion.img 
           key={`${currentPlace.id}-${currentImageIndex}`}
-          initial={{ scale: 1.1, opacity: 0 }}
-          animate={{ scale: 1, opacity: 0.6 }}
-          transition={{ duration: 2 }}
+          initial={{ scale: 1.05, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.5 }}
           src={currentImage.url}
-          className="w-full h-full object-cover filter brightness-50"
+          className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent" />
         
         {currentImage.attribution && (
-          <div className="absolute bottom-32 left-8 z-20 text-[8px] text-white/30 uppercase tracking-widest max-w-xs">
+          <div className="absolute bottom-32 left-8 z-20 text-[8px] text-slate-400 uppercase tracking-widest max-w-xs bg-white/60 backdrop-blur-sm px-2 py-1 rounded">
             {currentImage.attribution}
           </div>
         )}
@@ -205,24 +196,18 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
 
       <div className="relative z-10 p-8 flex justify-between items-start">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white/50 font-serif text-sm">
+          <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-serif text-sm shadow-md">
             {currentIndex + 1}
           </div>
           <div>
-            <h4 className="text-yellow-500/80 text-[10px] tracking-[0.4em] uppercase font-bold">{t.scene} {currentIndex + 1}</h4>
-            <h2 className="text-white font-serif text-2xl tracking-wide">{currentPlace.cityName}</h2>
+            <h4 className="text-orange-600/80 text-[10px] tracking-widest uppercase font-bold">{language === 'en' ? "Memory" : "回忆"} {currentIndex + 1}</h4>
+            <h2 className="text-slate-800 font-serif text-2xl tracking-wide">{currentPlace.cityName}</h2>
           </div>
         </div>
         
-        <div className="w-32 h-20 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden relative">
-          <div className="absolute inset-0 opacity-30 bg-slate-800" />
-          <div className="absolute inset-0 flex items-center justify-center">
-             <div className="w-2 h-2 bg-yellow-500 rounded-full shadow-[0_0_10px_#eab308] animate-pulse" />
-          </div>
-          <div className="absolute bottom-1 left-2 text-[8px] text-white/50 uppercase tracking-tighter">
-            {currentPlace.lat.toFixed(2)}, {currentPlace.lng.toFixed(2)}
-          </div>
-        </div>
+        <button onClick={onClose} className="p-3 rounded-full bg-white/80 backdrop-blur-md border border-slate-100 text-slate-400 hover:text-slate-800 transition-all shadow-sm">
+          <X className="w-5 h-5" />
+        </button>
       </div>
 
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-8">
@@ -232,28 +217,34 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -30 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="max-w-5xl"
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5, duration: 1 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+              className="bg-white/80 backdrop-blur-lg p-10 rounded-[3rem] border border-white shadow-xl relative"
             >
-              <h3 className="text-yellow-500/60 font-serif italic text-2xl mb-8 tracking-[0.2em]">
-                {currentPlace.tag || "A Moment in Time"}
+              <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white shadow-lg">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              
+              <h3 className="text-orange-500 font-serif italic text-xl mb-4 tracking-wide">
+                {currentPlace.tag || (language === 'en' ? "A Happy Moment" : "快乐瞬间")}
               </h3>
-              <h1 className="text-6xl md:text-9xl font-serif text-white mb-10 drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-tight">
+              
+              <h1 className="text-5xl md:text-7xl font-serif text-slate-800 mb-8 tracking-tight">
                 {currentPlace.cityName}
               </h1>
-              <div className="w-32 h-px bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent mx-auto mb-10" />
-              <p className="text-2xl md:text-4xl text-slate-200 font-light leading-relaxed italic max-w-3xl mx-auto drop-shadow-lg">
-                "{language === 'en' ? currentPlace.curatedDescription?.split('.')[0] : (currentPlace.curatedDescriptionZh || currentPlace.curatedDescription)?.split('。')[0]}."
+              
+              <p className="text-xl md:text-3xl text-slate-700 font-light leading-relaxed max-w-3xl mx-auto mb-10">
+                {language === 'en' ? currentPlace.curatedDescription : (currentPlace.curatedDescriptionZh || currentPlace.curatedDescription)}
               </p>
               
-              <div className="mt-16 flex flex-wrap justify-center gap-4">
+              <div className="flex flex-wrap justify-center gap-3">
                 {(language === 'en' ? currentPlace.highlights : (currentPlace.highlightsZh || currentPlace.highlights))?.map((h, i) => (
-                  <span key={i} className="px-6 py-2 bg-black/40 backdrop-blur-md border border-white/10 rounded-full text-xs text-slate-300 uppercase tracking-[0.3em] font-medium">
+                  <span key={i} className="px-6 py-2.5 bg-orange-100/50 text-orange-600 rounded-full text-xs uppercase tracking-widest font-bold border border-orange-200">
                     {h}
                   </span>
                 ))}
@@ -263,19 +254,19 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
         </AnimatePresence>
       </div>
 
-      <div className="relative z-10 p-8 bg-gradient-to-t from-black to-transparent">
+      <div className="relative z-10 p-8 bg-gradient-to-t from-white via-white to-transparent">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-6">
-            <button onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))} className="text-white/40 hover:text-white transition-colors">
+            <button onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))} className="text-slate-400 hover:text-slate-800 transition-colors">
               <SkipBack className="w-5 h-5" />
             </button>
             <button 
               onClick={() => setIsPlaying(!isPlaying)}
-              className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform"
+              className="w-14 h-14 rounded-full bg-orange-500 text-white shadow-lg shadow-orange-200 flex items-center justify-center hover:scale-105 transition-transform"
             >
               {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-1" />}
             </button>
-            <button onClick={() => setCurrentIndex(Math.min(sortedPlaces.length - 1, currentIndex + 1))} className="text-white/40 hover:text-white transition-colors">
+            <button onClick={() => setCurrentIndex(Math.min(sortedPlaces.length - 1, currentIndex + 1))} className="text-slate-400 hover:text-slate-800 transition-colors">
               <SkipForward className="w-5 h-5" />
             </button>
           </div>
@@ -287,7 +278,7 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
                   const nextIdx = (currentImageIndex + 1) % currentPlace.curatedImages!.length;
                   setSelectedImageIndexes(prev => ({ ...prev, [currentPlace.id]: nextIdx }));
                 }}
-                className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 text-[10px] text-white/40 hover:text-white hover:border-white/30 uppercase tracking-widest font-bold transition-all"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-orange-200 bg-white text-[10px] text-orange-600 hover:bg-orange-50 uppercase tracking-widest font-bold transition-all shadow-sm"
                 title={t.moreCityStills}
               >
                 <Film className="w-4 h-4" />
@@ -296,30 +287,23 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
             )}
             <button 
               onClick={() => setShowSceneList(!showSceneList)}
-              className={`p-3 rounded-full border transition-all ${showSceneList ? 'bg-yellow-500 border-yellow-500 text-black' : 'border-white/10 text-white/40 hover:text-white'}`}
+              className={`p-3 rounded-full border transition-all shadow-sm ${showSceneList ? 'bg-orange-500 border-orange-500 text-white' : 'bg-white border-slate-200 text-slate-400 hover:text-slate-800'}`}
             >
               <List className="w-5 h-5" />
-            </button>
-            <button 
-              onClick={() => setIsAutoPlay(!isAutoPlay)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] uppercase tracking-widest font-bold transition-all ${isAutoPlay ? 'bg-white/10 border-white/20 text-yellow-500' : 'border-white/5 text-white/20'}`}
-            >
-              <Settings2 className="w-4 h-4" />
-              {isAutoPlay ? (language === 'en' ? "Autoplay On" : "自动播放开启") : (language === 'en' ? "Manual Mode" : "手动模式")}
             </button>
           </div>
         </div>
 
-        <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+        <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
           {sortedPlaces.map((p, i) => (
             <button 
               key={p.id}
               onClick={() => setCurrentIndex(i)}
-              className={`flex-shrink-0 w-32 h-20 rounded-lg overflow-hidden border-2 transition-all relative ${i === currentIndex ? 'border-yellow-500 scale-105 z-10' : 'border-transparent opacity-40 hover:opacity-100'}`}
+              className={`flex-shrink-0 w-32 h-20 rounded-2xl overflow-hidden border-2 transition-all relative shadow-sm ${i === currentIndex ? 'border-orange-500 scale-105 z-10' : 'border-transparent opacity-60 hover:opacity-100'}`}
             >
               <img src={p.curatedImages?.[selectedImageIndexes[p.id] || 0]?.url || p.curatedImage} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-              <div className="absolute inset-0 bg-black/40 flex items-end p-2">
-                <span className="text-[8px] text-white uppercase tracking-tighter truncate">{p.cityName}</span>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-2">
+                <span className="text-[8px] text-white font-bold uppercase tracking-tighter truncate">{p.cityName}</span>
               </div>
             </button>
           ))}
@@ -330,61 +314,34 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
 
   const TransitionScreen = () => {
     if (!transitionData) return null;
-    const distance = calculateDistance(transitionData.from, transitionData.to);
-    const tzDiff = getTimezoneDiff(transitionData.from, transitionData.to);
     
     return (
       <motion.div 
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-[#020617] flex flex-col items-center justify-center p-8 z-50"
+        className="absolute inset-0 bg-white flex flex-col items-center justify-center p-8 z-50"
       >
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500 to-transparent" />
-        </div>
-
         <motion.div 
           initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-          className="text-center max-w-2xl"
+          className="text-center"
         >
-          <div className="flex items-center justify-center gap-12 mb-12">
-            <div className="text-right">
-              <h4 className="text-slate-500 text-[10px] uppercase tracking-widest mb-2">{t.departure}</h4>
-              <h2 className="text-white font-serif text-3xl">{transitionData.from.cityName}</h2>
-            </div>
+          <div className="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-10">
             <motion.div 
-              animate={{ x: [0, 20, 0] }} transition={{ repeat: Infinity, duration: 2 }}
-              className="text-yellow-500"
+              animate={{ x: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}
+              className="text-orange-500"
             >
-              <ArrowRight className="w-8 h-8" />
+              <ArrowRight className="w-10 h-10" />
             </motion.div>
-            <div className="text-left">
-              <h4 className="text-slate-500 text-[10px] uppercase tracking-widest mb-2">{t.arrival}</h4>
-              <h2 className="text-white font-serif text-3xl">{transitionData.to.cityName}</h2>
-            </div>
           </div>
-
-          <div className="grid grid-cols-3 gap-12 mb-16">
-            <div className="flex flex-col items-center gap-2">
-              <Compass className="w-5 h-5 text-slate-600" />
-              <span className="text-white font-serif text-xl">{distance}km</span>
-              <span className="text-[8px] text-slate-500 uppercase tracking-widest">{t.distance}</span>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <Clock className="w-5 h-5 text-slate-600" />
-              <span className="text-white font-serif text-xl">{tzDiff}</span>
-              <span className="text-[8px] text-slate-500 uppercase tracking-widest">{t.timeShift}</span>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <Globe className="w-5 h-5 text-slate-600" />
-              <span className="text-white font-serif text-xl">{t.transGlobal}</span>
-              <span className="text-[8px] text-slate-500 uppercase tracking-widest">{t.routeType}</span>
-            </div>
-          </div>
-
-          <p className="text-slate-400 font-serif italic text-xl">
-            {language === 'en' 
-              ? `"Leaving the echoes of ${transitionData.from.cityName} behind, we follow the horizon toward ${transitionData.to.cityName}."`
-              : `"告别${transitionData.from.cityName}的回响，我们追随地平线，奔向${transitionData.to.cityName}。"`}
+          
+          <h4 className="text-orange-400 text-xs uppercase tracking-[0.3em] mb-4 font-bold">
+            {language === 'en' ? "Next Happy Stop" : "下一站快乐"}
+          </h4>
+          <h2 className="text-slate-800 font-serif text-5xl md:text-7xl mb-8 tracking-tight">
+            {transitionData.to.cityName}
+          </h2>
+          
+          <p className="text-slate-400 font-serif italic text-2xl">
+            {language === 'en' ? "More smiles ahead..." : "前方更多欢笑..."}
           </p>
         </motion.div>
       </motion.div>
@@ -394,50 +351,58 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
   const EndCredits = () => (
     <motion.div 
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="absolute inset-0 bg-black flex flex-col items-center justify-center p-8 text-center z-50 overflow-y-auto"
+      className="absolute inset-0 bg-white flex flex-col items-center justify-center p-8 text-center z-50 overflow-y-auto"
     >
       <motion.div 
-        initial={{ y: 100 }} animate={{ y: -100 }} transition={{ duration: 15, base: "linear" }}
+        initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 1 }}
         className="max-w-xl py-20"
       >
-        <h2 className="text-white font-serif text-5xl mb-16">{t.fin}</h2>
+        <div className="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-10">
+          <Sparkles className="w-12 h-12 text-orange-500" />
+        </div>
+        
+        <h2 className="text-slate-800 font-serif text-5xl mb-16 tracking-tight">
+          {language === 'en' ? "To Be Continued..." : "未完待续..."}
+        </h2>
         
         <div className="space-y-12 mb-20">
           <div>
-            <h4 className="text-yellow-500 text-[10px] uppercase tracking-[0.4em] mb-4">{t.featuredLocations}</h4>
-            {sortedPlaces.map(p => (
-              <div key={p.id} className="text-white font-serif text-xl mb-2">{p.cityName}, {p.country}</div>
-            ))}
+            <h4 className="text-orange-500 text-xs uppercase tracking-widest mb-6 font-bold">
+              {language === 'en' ? "Happy Places Visited" : "走过的快乐足迹"}
+            </h4>
+            <div className="flex flex-wrap justify-center gap-3">
+              {sortedPlaces.map(p => (
+                <span key={p.id} className="text-slate-700 font-serif text-lg bg-orange-50 px-6 py-2 rounded-full border border-orange-100">
+                  {p.cityName}
+                </span>
+              ))}
+            </div>
           </div>
           
           <div>
-            <h4 className="text-yellow-500 text-[10px] uppercase tracking-[0.4em] mb-4">{t.thematicElements}</h4>
-            <div className="text-white font-serif text-xl">
-              {Array.from(new Set(places.map(p => p.tag).filter(Boolean))).join(" • ")}
-            </div>
-          </div>
-
-          <div>
-            <h4 className="text-yellow-500 text-[10px] uppercase tracking-[0.4em] mb-4">{t.closingThought}</h4>
-            <p className="text-slate-400 font-serif italic text-2xl">
-              "{t.closingQuote}"
+            <h4 className="text-orange-500 text-xs uppercase tracking-widest mb-4 font-bold">
+              {language === 'en' ? "A Little Note" : "快乐寄语"}
+            </h4>
+            <p className="text-slate-500 font-serif italic text-2xl leading-relaxed">
+              {language === 'en' 
+                ? "Every place is a new reason to smile. Keep exploring, keep shining!" 
+                : "每一个地方都是一个微笑的新理由。继续探索，继续闪耀！"}
             </p>
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-6 pt-20">
+        <div className="flex flex-col items-center gap-6 pt-10">
           <button 
-            onClick={() => { setCurrentIndex(0); setState("opening"); }}
-            className="flex items-center gap-3 text-white/50 hover:text-white transition-colors uppercase tracking-[0.3em] text-xs"
+            onClick={() => { setCurrentIndex(0); setState("scene"); }}
+            className="px-12 py-5 bg-orange-500 text-white rounded-full font-bold tracking-[0.1em] uppercase text-sm hover:scale-105 transition-all shadow-lg shadow-orange-200"
           >
-            <RotateCcw className="w-4 h-4" />
-            {t.rewatchFilm}
+            {language === 'en' ? "Relive the Joy" : "再次重温"}
           </button>
           <button 
             onClick={onClose}
-            className="px-8 py-3 border border-white/20 rounded-full text-white/80 hover:bg-white hover:text-black transition-all uppercase tracking-[0.2em] text-[10px] font-bold"
+            className="text-slate-400 hover:text-slate-800 transition-colors uppercase tracking-widest text-[10px] font-bold"
           >
-            {t.returnToAtlas}
+            {language === 'en' ? "Back to Map" : "返回地图"}
           </button>
         </div>
       </motion.div>
@@ -448,7 +413,6 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
     <div className="fixed inset-0 z-[100] bg-black text-white font-sans overflow-hidden">
       <AnimatePresence mode="wait">
         {state === "lobby" && <Lobby key="lobby" />}
-        {state === "opening" && <OpeningCredits key="opening" />}
         {state === "scene" && <MainScene key="scene" />}
         {state === "transition" && <TransitionScreen key="transition" />}
         {state === "credits" && <EndCredits key="credits" />}
