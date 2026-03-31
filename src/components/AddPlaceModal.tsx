@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, MapPin, Calendar, Image as ImageIcon, Tag, Loader2 } from "lucide-react";
+import { GoogleGenAI, Type } from "@google/genai";
 import { Place } from "../types";
 
 interface AddPlaceModalProps {
@@ -18,6 +19,40 @@ export default function AddPlaceModal({ isOpen, onClose, onAdd }: AddPlaceModalP
   const [imageUrl, setImageUrl] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState("");
+
+  const generateAIDetails = async (city: string, countryName: string) => {
+    try {
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) return null;
+
+      const ai = new GoogleGenAI({ apiKey });
+      const prompt = `You are a cinematic storyteller. Generate a poetic, evocative description (exactly 2 sentences) for the city of ${city}, ${countryName}. 
+      Focus on its unique soul—the light, the architecture, or the hidden rhythm of its streets. 
+      Also, provide exactly 3 specific, world-famous landmarks or cultural symbols of this city.
+      The language should be English, suitable for a movie voiceover.`;
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3.1-flash-preview",
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              description: { type: Type.STRING },
+              highlights: { type: Type.ARRAY, items: { type: Type.STRING } }
+            },
+            required: ["description", "highlights"]
+          }
+        }
+      });
+
+      return JSON.parse(response.text);
+    } catch (e) {
+      console.error("Gemini generation failed:", e);
+      return null;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,23 +79,13 @@ export default function AddPlaceModal({ isOpen, onClose, onAdd }: AddPlaceModalP
 
         const curatedImage = `https://picsum.photos/seed/${encodeURIComponent(cityName + country)}/800/600?blur=2`;
         
-        let curatedDescription = `A beautiful and unique place in ${country}.`;
+        let curatedDescription = `A beautiful and unique place in ${country}. The architecture and natural landscapes of ${cityName} offer an unforgettable experience.`;
         let highlights = ["Local Culture", "Historic Architecture", "Scenic Views"];
 
-        try {
-          const aiResponse = await fetch("/api/generate-place-details", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ cityName, country })
-          });
-          
-          if (aiResponse.ok) {
-            const aiData = await aiResponse.json();
-            if (aiData.description) curatedDescription = aiData.description;
-            if (aiData.highlights) highlights = aiData.highlights;
-          }
-        } catch (e) {
-          console.error("Failed to fetch AI details", e);
+        const aiData = await generateAIDetails(cityName, country);
+        if (aiData) {
+          curatedDescription = aiData.description;
+          highlights = aiData.highlights;
         }
 
         onAdd({
