@@ -73,6 +73,8 @@ export const t = {
     timeZone: "Time Zone",
     notableFigures: "Notable Figures",
     stop: "Stop",
+    changePoster: "Change Poster",
+    moreCityStills: "More City Stills",
   },
   zh: {
     title: "我的地图",
@@ -146,5 +148,7 @@ export const t = {
     timeZone: "时区",
     notableFigures: "著名人物",
     stop: "站",
+    changePoster: "更换海报",
+    moreCityStills: "更多剧照",
   }
 };

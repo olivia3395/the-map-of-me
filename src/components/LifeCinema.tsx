@@ -26,6 +26,7 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
   const [isPlaying, setIsPlaying] = useState(true);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [showSceneList, setShowSceneList] = useState(false);
+  const [selectedImageIndexes, setSelectedImageIndexes] = useState<Record<string, number>>({});
   const [transitionData, setTransitionData] = useState<{ from: Place; to: Place } | null>(null);
 
   const sortedPlaces = useMemo(() => {
@@ -47,6 +48,8 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
   }, [places, cutType]);
 
   const currentPlace = sortedPlaces[currentIndex];
+  const currentImageIndex = selectedImageIndexes[currentPlace?.id] || 0;
+  const currentImage = currentPlace?.curatedImages?.[currentImageIndex] || { url: currentPlace?.curatedImage, attribution: "", source: "Default" };
   const nextPlace = sortedPlaces[currentIndex + 1];
 
   useEffect(() => {
@@ -183,15 +186,21 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
     <div className="absolute inset-0 flex flex-col justify-between">
       <div className="absolute inset-0 overflow-hidden">
         <motion.img 
-          key={currentPlace.id}
+          key={`${currentPlace.id}-${currentImageIndex}`}
           initial={{ scale: 1.1, opacity: 0 }}
           animate={{ scale: 1, opacity: 0.6 }}
           transition={{ duration: 2 }}
-          src={currentPlace.curatedImage}
+          src={currentImage.url}
           className="w-full h-full object-cover filter brightness-50"
           referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/60" />
+        
+        {currentImage.attribution && (
+          <div className="absolute bottom-32 left-8 z-20 text-[8px] text-white/30 uppercase tracking-widest max-w-xs">
+            {currentImage.attribution}
+          </div>
+        )}
       </div>
 
       <div className="relative z-10 p-8 flex justify-between items-start">
@@ -219,30 +228,37 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-8">
         <AnimatePresence mode="wait">
           <motion.div 
-            key={currentPlace.id}
-            initial={{ opacity: 0, y: 20 }}
+            key={`${currentPlace.id}-${currentImageIndex}`}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 1 }}
-            className="max-w-4xl"
+            exit={{ opacity: 0, y: -30 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            className="max-w-5xl"
           >
-            <h3 className="text-white/40 font-serif italic text-xl mb-6">
-              {currentPlace.tag || "A Moment in Time"}
-            </h3>
-            <h1 className="text-5xl md:text-8xl font-serif text-white mb-8 drop-shadow-2xl">
-              {currentPlace.cityName}
-            </h1>
-            <p className="text-xl md:text-3xl text-slate-200 font-light leading-relaxed italic max-w-2xl mx-auto">
-              "{language === 'en' ? currentPlace.curatedDescription?.split('.')[0] : (currentPlace.curatedDescriptionZh || currentPlace.curatedDescription)?.split('。')[0]}."
-            </p>
-            
-            <div className="mt-12 flex flex-wrap justify-center gap-3">
-              {(language === 'en' ? currentPlace.highlights : (currentPlace.highlightsZh || currentPlace.highlights))?.map((h, i) => (
-                <span key={i} className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-[10px] text-slate-400 uppercase tracking-widest">
-                  {h}
-                </span>
-              ))}
-            </div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, duration: 1 }}
+            >
+              <h3 className="text-yellow-500/60 font-serif italic text-2xl mb-8 tracking-[0.2em]">
+                {currentPlace.tag || "A Moment in Time"}
+              </h3>
+              <h1 className="text-6xl md:text-9xl font-serif text-white mb-10 drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)] tracking-tight">
+                {currentPlace.cityName}
+              </h1>
+              <div className="w-32 h-px bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent mx-auto mb-10" />
+              <p className="text-2xl md:text-4xl text-slate-200 font-light leading-relaxed italic max-w-3xl mx-auto drop-shadow-lg">
+                "{language === 'en' ? currentPlace.curatedDescription?.split('.')[0] : (currentPlace.curatedDescriptionZh || currentPlace.curatedDescription)?.split('。')[0]}."
+              </p>
+              
+              <div className="mt-16 flex flex-wrap justify-center gap-4">
+                {(language === 'en' ? currentPlace.highlights : (currentPlace.highlightsZh || currentPlace.highlights))?.map((h, i) => (
+                  <span key={i} className="px-6 py-2 bg-black/40 backdrop-blur-md border border-white/10 rounded-full text-xs text-slate-300 uppercase tracking-[0.3em] font-medium">
+                    {h}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -265,6 +281,19 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
           </div>
 
           <div className="flex items-center gap-4">
+            {currentPlace.curatedImages && currentPlace.curatedImages.length > 1 && (
+              <button 
+                onClick={() => {
+                  const nextIdx = (currentImageIndex + 1) % currentPlace.curatedImages!.length;
+                  setSelectedImageIndexes(prev => ({ ...prev, [currentPlace.id]: nextIdx }));
+                }}
+                className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 text-[10px] text-white/40 hover:text-white hover:border-white/30 uppercase tracking-widest font-bold transition-all"
+                title={t.moreCityStills}
+              >
+                <Film className="w-4 h-4" />
+                {t.changePoster}
+              </button>
+            )}
             <button 
               onClick={() => setShowSceneList(!showSceneList)}
               className={`p-3 rounded-full border transition-all ${showSceneList ? 'bg-yellow-500 border-yellow-500 text-black' : 'border-white/10 text-white/40 hover:text-white'}`}
@@ -286,9 +315,9 @@ export default function LifeCinema({ places, language, onClose, onSceneChange }:
             <button 
               key={p.id}
               onClick={() => setCurrentIndex(i)}
-              className={`flex-shrink-0 w-32 h-20 rounded-lg overflow-hidden border-2 transition-all ${i === currentIndex ? 'border-yellow-500 scale-105 z-10' : 'border-transparent opacity-40 hover:opacity-100'}`}
+              className={`flex-shrink-0 w-32 h-20 rounded-lg overflow-hidden border-2 transition-all relative ${i === currentIndex ? 'border-yellow-500 scale-105 z-10' : 'border-transparent opacity-40 hover:opacity-100'}`}
             >
-              <img src={p.curatedImage} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              <img src={p.curatedImages?.[selectedImageIndexes[p.id] || 0]?.url || p.curatedImage} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               <div className="absolute inset-0 bg-black/40 flex items-end p-2">
                 <span className="text-[8px] text-white uppercase tracking-tighter truncate">{p.cityName}</span>
               </div>

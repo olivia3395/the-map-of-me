@@ -65,6 +65,50 @@ export default function AddPlaceModal({ isOpen, onClose, onAdd, language }: AddP
     }
   };
 
+  const searchRealImages = async (city: string, countryName: string) => {
+    const queries = [
+      `${city} ${countryName} skyline cityscape`,
+      `${city} ${countryName} landmark iconic`,
+      `${city} ${countryName} aerial view`
+    ];
+    const images: { url: string; attribution?: string; source: string }[] = [];
+
+    try {
+      for (const query of queries) {
+        const encodedQuery = encodeURIComponent(query);
+        const wikiUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodedQuery}&gsrlimit=3&prop=imageinfo&iiprop=url|extmetadata&format=json&origin=*`;
+        const wikiRes = await fetch(wikiUrl);
+        const wikiData = await wikiRes.json();
+
+        if (wikiData.query && wikiData.query.pages) {
+          Object.values(wikiData.query.pages).forEach((page: any) => {
+            if (page.imageinfo && page.imageinfo[0]) {
+              const info = page.imageinfo[0];
+              const metadata = info.extmetadata;
+              const artist = metadata?.Artist?.value || "Unknown";
+              const license = metadata?.LicenseShortName?.value || "Public Domain";
+              
+              // Avoid duplicates
+              if (!images.find(img => img.url === info.url)) {
+                images.push({
+                  url: info.url,
+                  attribution: `Photo by ${artist.replace(/<[^>]*>?/gm, '')} (${license}) via Wikimedia Commons`,
+                  source: "Wikimedia Commons"
+                });
+              }
+            }
+          });
+        }
+        if (images.length >= 5) break;
+      }
+
+      return images.slice(0, 5); // Return up to 5 options
+    } catch (e) {
+      console.error("Image search failed:", e);
+      return [];
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!cityName || !country) {
@@ -88,8 +132,15 @@ export default function AddPlaceModal({ isOpen, onClose, onAdd, language }: AddP
         const lat = parseFloat(data[0].lat);
         const lng = parseFloat(data[0].lon);
 
-        const curatedImage = `https://picsum.photos/seed/${encodeURIComponent(cityName + country)}/800/600?blur=2`;
+        let curatedImage = `https://picsum.photos/seed/${encodeURIComponent(cityName + country)}/1920/1080`;
+        let curatedImages: { url: string; attribution?: string; source: string }[] = [];
         
+        const realImages = await searchRealImages(cityName, country);
+        if (realImages.length > 0) {
+          curatedImages = realImages;
+          curatedImage = realImages[0].url;
+        }
+
         let curatedDescription = `A beautiful and unique place in ${country}. The architecture and natural landscapes of ${cityName} offer an unforgettable experience.`;
         let curatedDescriptionZh = `位于${country}的一个美丽而独特的地方。${cityName}的建筑和自然景观将为您提供难忘的体验。`;
         let highlights = ["Local Culture", "Historic Architecture", "Scenic Views"];
@@ -113,6 +164,7 @@ export default function AddPlaceModal({ isOpen, onClose, onAdd, language }: AddP
           tag,
           imageUrl,
           curatedImage,
+          curatedImages,
           curatedDescription,
           curatedDescriptionZh,
           highlights,
