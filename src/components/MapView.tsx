@@ -7,8 +7,8 @@ interface MapViewProps {
   places: Place[];
   activePlaceId: string | null;
   onPlaceClick: (place: Place) => void;
-  position: { coordinates: [number, number]; zoom: number; pitch?: number; bearing?: number };
-  onMoveEnd: (position: { coordinates: [number, number]; zoom: number; pitch?: number; bearing?: number }) => void;
+  position: { coordinates: [number, number]; zoom: number; pitch?: number; bearing?: number; duration?: number };
+  onMoveEnd: (position: { coordinates: [number, number]; zoom: number; pitch?: number; bearing?: number; duration?: number }) => void;
   mode: "overview" | "explore";
   mapTheme: string;
   showRoute: boolean;
@@ -25,7 +25,7 @@ export default function MapView({ places, activePlaceId, onPlaceClick, position,
         zoom: position.zoom,
         pitch: position.pitch || 0,
         bearing: position.bearing || 0,
-        duration: 3000,
+        duration: position.duration || 3000,
         curve: 1.2,
         speed: 0.8,
         essential: true

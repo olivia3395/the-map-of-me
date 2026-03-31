@@ -51,6 +51,9 @@ export default function CityProfileCard({ place, onClose }: CityProfileCardProps
           {/* Header */}
           <div className="flex justify-between items-start mb-5">
             <div>
+              <div className="text-[8px] uppercase tracking-[0.3em] text-yellow-500/80 mb-2 font-bold">
+                Place View
+              </div>
               <h3 className="text-xl font-serif text-yellow-400 tracking-wide leading-none mb-1.5">
                 {place.cityName}
               </h3>

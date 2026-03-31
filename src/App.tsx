@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Plus, Download, Map, Sparkles, Play, Pause } from "lucide-react";
+import { Plus, Download, Map, Sparkles, Play, Pause, Film } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import MapView from "./components/MapView";
 import Constellation from "./components/Constellation";
 import CityProfileCard from "./components/CityProfileCard";
 import AddPlaceModal from "./components/AddPlaceModal";
+import LifeCinema from "./components/LifeCinema";
 import Timeline from "./components/Timeline";
 import { ManagePlacesModal, ProfileModal, SettingsModal } from "./components/Modals";
 import { Place } from "./types";
 
 export default function App() {
   const [mode, setMode] = useState<"overview" | "explore">("overview");
-  const [position, setPosition] = useState({ coordinates: [0, 30] as [number, number], zoom: 1, pitch: 0, bearing: 0 });
+  const [position, setPosition] = useState<{ coordinates: [number, number]; zoom: number; pitch?: number; bearing?: number; duration?: number }>({ coordinates: [0, 30], zoom: 1, pitch: 0, bearing: 0 });
   const [places, setPlaces] = useState<Place[]>([]);
   const [isAddingPlace, setIsAddingPlace] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
@@ -24,6 +25,7 @@ export default function App() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isCinemaMode, setIsCinemaMode] = useState(false);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -154,54 +156,75 @@ export default function App() {
             transition={{ duration: 0.8 }}
             className="absolute inset-0 z-20 pointer-events-none"
           >
-            <motion.div 
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="absolute top-8 left-8 pointer-events-auto cursor-pointer group bg-white/60 backdrop-blur-xl px-6 py-4 rounded-3xl shadow-lg border border-white/50" 
-              onClick={() => { 
-                setMode("overview"); 
-                setPosition({ coordinates: [0, 30], zoom: 1, pitch: 0, bearing: 0 }); 
-                setSelectedPlace(null); 
-              }}
-            >
-              <h1 className="font-serif text-2xl tracking-wide text-slate-900 font-bold drop-shadow-sm group-hover:text-yellow-700 transition-colors duration-300">
-                The Map of Me
-              </h1>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-slate-700 mt-1 font-bold group-hover:text-slate-900 transition-colors">
-                ← Return to Overview
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-              className="absolute top-32 left-8 flex flex-col gap-2 pointer-events-auto z-50"
-            >
-              {['Americas', 'Europe', 'Asia'].map((region) => (
-                <button
-                  key={region}
-                  onClick={() => handleRegionClick(region)}
-                  className="px-4 py-2 bg-white/60 backdrop-blur-md border border-white/50 rounded-full text-xs font-bold tracking-widest uppercase text-slate-700 hover:bg-white hover:text-slate-900 transition-all shadow-sm"
+            {!isCinemaMode && (
+              <motion.div 
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="absolute top-8 left-8 pointer-events-auto flex items-center gap-4" 
+              >
+                <div 
+                  className="cursor-pointer group bg-white/60 backdrop-blur-xl px-6 py-4 rounded-3xl shadow-lg border border-white/50"
+                  onClick={() => { 
+                    setMode("overview"); 
+                    setPosition({ coordinates: [0, 30], zoom: 1, pitch: 0, bearing: 0 }); 
+                    setSelectedPlace(null); 
+                  }}
                 >
-                  {region}
-                </button>
-              ))}
-            </motion.div>
+                  <h1 className="font-serif text-2xl tracking-wide text-slate-900 font-bold drop-shadow-sm group-hover:text-yellow-700 transition-colors duration-300">
+                    Atlas View
+                  </h1>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-slate-700 mt-1 font-bold group-hover:text-slate-900 transition-colors">
+                    ← Return Home
+                  </p>
+                </div>
+                
+                {places.length > 0 && (
+                  <button 
+                    onClick={() => setIsCinemaMode(true)}
+                    className="flex items-center gap-2 px-5 py-3 bg-slate-900/80 hover:bg-slate-900 backdrop-blur-xl border border-white/20 rounded-full text-xs font-bold tracking-widest uppercase text-yellow-500 transition-all shadow-xl"
+                  >
+                    <Film className="w-4 h-4" />
+                    Life Cinema
+                  </button>
+                )}
+              </motion.div>
+            )}
 
-            <Constellation 
-              places={places} 
-              onPlaceClick={handlePlaceClick} 
-              activePlaceId={selectedPlace?.id || null} 
-            />
+            {!isCinemaMode && (
+              <motion.div
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.8 }}
+                className="absolute top-32 left-8 flex flex-col gap-2 pointer-events-auto z-50"
+              >
+                {['Americas', 'Europe', 'Asia'].map((region) => (
+                  <button
+                    key={region}
+                    onClick={() => handleRegionClick(region)}
+                    className="px-4 py-2 bg-white/60 backdrop-blur-md border border-white/50 rounded-full text-xs font-bold tracking-widest uppercase text-slate-700 hover:bg-white hover:text-slate-900 transition-all shadow-sm"
+                  >
+                    {region}
+                  </button>
+                ))}
+              </motion.div>
+            )}
 
-            <motion.div 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="absolute bottom-8 right-8 flex items-center gap-4 pointer-events-auto print:hidden z-50"
-            >
+            {!isCinemaMode && (
+              <Constellation 
+                places={places} 
+                onPlaceClick={handlePlaceClick} 
+                activePlaceId={selectedPlace?.id || null} 
+              />
+            )}
+
+            {!isCinemaMode && (
+              <motion.div 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="absolute bottom-8 right-8 flex items-center gap-4 pointer-events-auto print:hidden z-50"
+              >
               <button
                 onClick={() => setIsAddingPlace(true)}
                 className="group relative flex items-center gap-2 px-6 py-3 bg-white/90 backdrop-blur-xl border border-white/50 rounded-full text-sm font-semibold tracking-widest hover:bg-white transition-all shadow-[0_10px_20px_rgba(0,0,0,0.1)] text-slate-800"
@@ -220,12 +243,13 @@ export default function App() {
                 </button>
               )}
             </motion.div>
+            )}
 
             <motion.div
-              initial={{ x: 20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.6, duration: 0.8 }}
-              className="absolute top-1/2 -translate-y-1/2 right-8 flex flex-col items-center gap-4 bg-white/90 backdrop-blur-2xl border border-white/60 rounded-full py-6 px-3 shadow-[0_20px_40px_rgba(0,0,0,0.1)] pointer-events-auto z-50"
+              className={`absolute bottom-24 right-8 flex flex-row items-center gap-2 bg-white/90 backdrop-blur-2xl border border-white/60 rounded-full px-4 py-2 shadow-[0_20px_40px_rgba(0,0,0,0.1)] pointer-events-auto z-50 ${isCinemaMode ? 'hidden' : ''}`}
             >
               <button 
                 onClick={() => setIsPlaying(!isPlaying)} 
@@ -234,7 +258,7 @@ export default function App() {
               >
                 {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
               </button>
-              <div className="w-8 h-px bg-slate-200 my-1" />
+              <div className="w-px h-6 bg-slate-200 mx-1" />
               <button onClick={() => setIsManageOpen(true)} className="p-2 text-slate-400 hover:text-slate-800 transition-colors hover:bg-slate-100 rounded-full" title="Manage Places">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
               </button>
@@ -252,20 +276,43 @@ export default function App() {
               </button>
             </motion.div>
 
-            <Timeline 
-              places={places} 
-              activePlaceId={selectedPlace?.id || null} 
-              onSelectPlace={handlePlaceClick} 
-            />
+            {!isCinemaMode && (
+              <Timeline 
+                places={places} 
+                activePlaceId={selectedPlace?.id || null} 
+                onSelectPlace={handlePlaceClick} 
+              />
+            )}
           </motion.div>
         )}
       </AnimatePresence>
 
       <AnimatePresence>
-        {selectedPlace && mode === 'explore' && (
+        {selectedPlace && mode === 'explore' && !isCinemaMode && (
           <CityProfileCard 
             place={selectedPlace} 
             onClose={() => setSelectedPlace(null)} 
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isCinemaMode && (
+          <LifeCinema 
+            places={places}
+            onClose={() => {
+              setIsCinemaMode(false);
+              setPosition({ coordinates: [0, 30], zoom: 2, pitch: 0, bearing: 0, duration: 2000 });
+            }}
+            onSceneChange={(place) => {
+              setPosition({
+                coordinates: [place.lng, place.lat],
+                zoom: 12,
+                pitch: 60,
+                bearing: Math.random() * 60 - 30, // Random cinematic angle
+                duration: 8000 // Slow cinematic pan
+              });
+            }}
           />
         )}
       </AnimatePresence>
