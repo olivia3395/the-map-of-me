@@ -225,7 +225,7 @@ const MOCK_WORKS: Work[] = [
     quoteZh: "看一个人的播放列表，就能了解他很多。",
     introduction: "A chance encounter between a disgraced music-business executive and a young singer-songwriter new to Manhattan turns into a promising collaboration.",
     introductionZh: "格雷塔跟随男友来到纽约，却遭遇背叛。在失意之时，她遇到了同样落魄的音乐制作人丹，两人决定在纽约的街头录制一张专辑。",
-    posterUrl: 'https://picsum.photos/seed/beginagain/800/1200',
+    posterUrl: 'https://upload.wikimedia.org/wikipedia/zh/b/bd/Begin_Again_film_poster_2014.jpg',
     checkInPoints: [
       { id: 'p1', name: 'Washington Square Park', nameZh: '华盛顿广场公园', location: 'Greenwich Village, Manhattan', locationZh: '曼哈顿格林威治村' },
       { id: 'p2', name: 'Times Square', nameZh: '时代广场', location: 'Manhattan', locationZh: '曼哈顿' },
@@ -245,7 +245,7 @@ const MOCK_WORKS: Work[] = [
     quoteZh: "于是我们奋力向前，逆水行舟，被不断地向后推，推入过去。",
     introduction: "The story of the mysteriously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan.",
     introductionZh: "尼克来到纽约，卷入了邻居盖茨比与黛西之间的情感纠葛。这是一个关于梦想、爱情与幻灭的故事。",
-    posterUrl: 'https://picsum.photos/seed/gatsby/800/1200',
+    posterUrl: 'https://upload.wikimedia.org/wikipedia/zh/thumb/2/26/TheGreatGatsby2012Poster.jpg/250px-TheGreatGatsby2012Poster.jpg',
     checkInPoints: [
       { id: 'p4', name: 'Plaza Hotel', nameZh: '广场饭店', location: '5th Ave, Manhattan', locationZh: '曼哈顿第五大道' },
       { id: 'p5', name: 'Queensboro Bridge', nameZh: '皇后区大桥', location: 'New York City', locationZh: '纽约市' },
@@ -264,7 +264,7 @@ const MOCK_WORKS: Work[] = [
     quoteZh: "这就是现在。它有点不尽如人意，因为生活就是有点不尽如人意。",
     introduction: "While on a trip to Paris with his fiancée's family, a nostalgic screenwriter finds himself mysteriously going back to the 1920s every day at midnight.",
     introductionZh: "吉尔随未婚妻一家来到巴黎。午夜时分，他意外地穿越回了20世纪20年代的巴黎，在那里他遇到了海明威、菲茨杰拉德等文坛巨匠。",
-    posterUrl: 'https://picsum.photos/seed/paris/800/1200',
+    posterUrl: 'https://img.savoirtw.org/images/article/1601454736_1559806585-016ad195308c5d2861a487a05986e182.jpg',
     checkInPoints: [
       { id: 'p6', name: 'Shakespeare and Company', nameZh: '莎士比亚书店', location: 'Paris', locationZh: '巴黎' },
       { id: 'p7', name: 'Pont Alexandre III', nameZh: '亚历山大三世桥', location: 'Paris', locationZh: '巴黎' },
@@ -283,7 +283,7 @@ const MOCK_WORKS: Work[] = [
     quoteZh: "你越了解自己，越清楚自己想要什么，就越不会让事情困扰你。",
     introduction: "A faded movie star and a neglected young woman form an unlikely bond after crossing paths in Tokyo.",
     introductionZh: "过气的电影明星鲍勃和年轻的夏洛特在东京的一家酒店相遇。两个孤独的灵魂在这个陌生的城市里产生了一种奇妙的联系。",
-    posterUrl: 'https://picsum.photos/seed/tokyo/800/1200',
+    posterUrl: 'https://upload.wikimedia.org/wikipedia/zh/6/68/Lost_in_Translation_movie.jpg',
     checkInPoints: [
       { id: 'p8', name: 'Park Hyatt Tokyo', nameZh: '东京柏悦酒店', location: 'Shinjuku, Tokyo', locationZh: '东京新宿' },
       { id: 'p9', name: 'Shibuya Crossing', nameZh: '涩谷十字路口', location: 'Shibuya, Tokyo', locationZh: '东京涩谷' },
@@ -302,7 +302,7 @@ const MOCK_WORKS: Work[] = [
     quoteZh: "如果你只读每个人都在读的书，你就只能想到每个人都在想的事。",
     introduction: "A story of loss and burgeoning sexuality in 1960s Tokyo.",
     introductionZh: "渡边在东京的大学生活中，徘徊在直子和绿子两个女孩之间。这是一个关于青春、孤独与死亡的故事。",
-    posterUrl: 'https://picsum.photos/seed/norwegian/800/1200',
+    posterUrl: 'https://www.filmcritics.org.hk/sites/default/files/2024-12/NorwegianWood_1.jpg',
     checkInPoints: [
       { id: 'p10', name: 'Waseda University', nameZh: '早稻田大学', location: 'Tokyo', locationZh: '东京' },
     ]
@@ -320,7 +320,7 @@ const MOCK_WORKS: Work[] = [
     quoteZh: "说好是一辈子，差一年，一个月，一天，一个时辰，都不算一辈子！",
     introduction: "The story of two performers in the Peking Opera and the woman who comes between them.",
     introductionZh: "讲述了程蝶衣与段小楼两个京剧演员半个世纪的悲欢离合，展现了中国近现代史的变迁。",
-    posterUrl: 'https://picsum.photos/seed/concubine/800/1200',
+    posterUrl: 'https://hips.hearstapps.com/hmg-prod/images/j3czmhisqin799r-1583933414.jpg',
     checkInPoints: [
       { id: 'p11', name: 'Prince Kung\'s Mansion', nameZh: '恭王府', location: 'Beijing', locationZh: '北京' },
     ]
@@ -338,7 +338,7 @@ const MOCK_WORKS: Work[] = [
     quoteZh: "我也只是个女孩，站在一个男孩面前，请求他爱她。",
     introduction: "The life of a simple bookshop owner changes when he meets the most famous film star in the world.",
     introductionZh: "一个平凡的旅行书店老板威廉，意外遇到了好莱坞大明星安娜，两人的生活从此发生了翻天覆地的变化。",
-    posterUrl: 'https://picsum.photos/seed/nottinghill/800/1200',
+    posterUrl: 'https://m.media-amazon.com/images/S/pv-target-images/5900316761cf701cf9142cc037610a7f6fbb2010c8c0bdac167eccb30fa2f2c5.jpg',
     checkInPoints: [
       { id: 'p12', name: 'The Travel Book Shop', nameZh: '旅行书店', location: 'Notting Hill, London', locationZh: '伦敦诺丁山' },
     ]
@@ -356,7 +356,7 @@ const MOCK_WORKS: Work[] = [
     quoteZh: "罗马！当然是罗马。我会用我的一生来珍藏在这里度过的每一分钟。",
     introduction: "A bored and sheltered princess escapes her guardians and falls in love with an American newsman in Rome.",
     introductionZh: "厌倦了繁琐礼节的安妮公主，在罗马访问期间私自出游，偶遇美国记者乔，两人在罗马度过了一个难忘的假日。",
-    posterUrl: 'https://picsum.photos/seed/rome/800/1200',
+    posterUrl: 'https://image.tmdb.org/t/p/original/hEj6NVGPwhue2eBxWGcodkIGLTC.jpg',
     checkInPoints: [
       { id: 'p13', name: 'The Mouth of Truth', nameZh: '真理之口', location: 'Rome', locationZh: '罗马' },
       { id: 'p14', name: 'Spanish Steps', nameZh: '西班牙阶梯', location: 'Rome', locationZh: '罗马' },
