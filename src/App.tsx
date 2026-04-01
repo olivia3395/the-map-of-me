@@ -338,7 +338,7 @@ const MOCK_WORKS: Work[] = [
     quoteZh: "我也只是个女孩，站在一个男孩面前，请求他爱她。",
     introduction: "The life of a simple bookshop owner changes when he meets the most famous film star in the world.",
     introductionZh: "一个平凡的旅行书店老板威廉，意外遇到了好莱坞大明星安娜，两人的生活从此发生了翻天覆地的变化。",
-    posterUrl: 'https://m.media-amazon.com/images/S/pv-target-images/5900316761cf701cf9142cc037610a7f6fbb2010c8c0bdac167eccb30fa2f2c5.jpg',
+    posterUrl: 'https://p0.itc.cn/q_70/images03/20220713/3fdd4995f713406097995d4b3a0ef94e.jpeg',
     checkInPoints: [
       { id: 'p12', name: 'The Travel Book Shop', nameZh: '旅行书店', location: 'Notting Hill, London', locationZh: '伦敦诺丁山' },
     ]
