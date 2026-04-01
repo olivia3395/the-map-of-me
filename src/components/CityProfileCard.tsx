@@ -32,7 +32,6 @@ const getNotableFigures = (city: string, language: 'en' | 'zh') => {
     'san francisco': { en: 'Jack London, Bruce Lee', zh: '杰克·伦敦, 李小龙' },
     'los angeles': { en: 'Marilyn Monroe, Kobe Bryant', zh: '玛丽莲·梦露, 科比·布莱恩特' },
     'rome': { en: 'Julius Caesar, Federico Fellini', zh: '尤利乌斯·凯撒, 费德里科·费里尼' },
-    'boston': { en: 'Sylvia Plath, Edgar Allan Poe, John F. Kennedy', zh: '西尔维娅·普拉斯, 埃德加·爱伦·坡, 约翰·肯尼迪' },
   };
   const entry = figures[city.toLowerCase()];
   if (entry) return entry[language];

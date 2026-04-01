@@ -372,39 +372,7 @@ export default function App() {
 
   const [mode, setMode] = useState<AppMode>("atlas");
   const [position, setPosition] = useState<{ coordinates: [number, number]; zoom: number; pitch?: number; bearing?: number; duration?: number }>({ coordinates: [0, 30], zoom: 1, pitch: 0, bearing: 0 });
-  const [places, setPlaces] = useState<Place[]>([
-    {
-      id: 'boston-1',
-      cityName: 'Boston',
-      country: 'United States',
-      lat: 42.3601,
-      lng: -71.0589,
-      year: '2024',
-      memory: 'A city of stories.',
-      orderIndex: 0,
-      tag: 'Cultural Hub',
-      culturalSummary: 'Boston through culture: Seen on screen in Good Will Hunting and Fever Pitch; read on the page in The Boston Girl and The Art Forger.',
-      culturalSummaryZh: '文化视角下的波士顿：在《心灵捕手》和《极度狂热》的银幕中穿梭；在《波士顿女孩》和《艺术伪造者》的文字间漫步。',
-      onScreen: [
-        { title: 'Good Will Hunting', titleZh: '心灵捕手', location: 'Public Garden', locationZh: '公共花园' },
-        { title: 'Cheers', titleZh: '欢乐酒店', location: 'Beacon Hill area', locationZh: '灯塔山区域' },
-        { title: 'Fever Pitch', titleZh: '极度狂热', location: 'Fenway Park', locationZh: '芬威球场' },
-        { title: 'Ted', titleZh: '泰迪熊', location: 'Fenway Park', locationZh: '芬威球场' },
-      ],
-      onThePage: [
-        { title: 'The Boston Girl', titleZh: '波士顿女孩' },
-        { title: 'The Art Forger', titleZh: '艺术伪造者' },
-        { title: 'The Dante Club', titleZh: '但丁俱乐部' },
-        { title: 'The Godwulf Manuscript', titleZh: '高德伍夫手稿' },
-      ],
-      walkTheCity: [
-        { title: 'Boston Common', titleZh: '波士顿公园' },
-        { title: 'Beacon Hill', titleZh: '灯塔山' },
-        { title: 'Public Garden', titleZh: '公共花园' },
-        { title: 'Fenway Park', titleZh: '芬威球场' },
-      ]
-    }
-  ]);
+  const [places, setPlaces] = useState<Place[]>([]);
 
   const [isAddingPlace, setIsAddingPlace] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
@@ -651,6 +619,11 @@ export default function App() {
                 mapTheme={mapTheme}
                 showRoute={showRoute}
                 showBuildings={showBuildings}
+              />
+              <Constellation 
+                places={places} 
+                onPlaceClick={handlePlaceClick} 
+                activePlaceId={selectedPlace?.id || null} 
               />
               
               {/* Atlas UI Overlays */}
