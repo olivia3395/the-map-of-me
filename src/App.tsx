@@ -33,6 +33,76 @@ import { Place, Work, CheckInPoint, CheckInRecord } from "./types";
 import { t as translations, Language } from "./i18n";
 
 const CITY_CULTURAL_DATA: Record<string, any> = {
+  'boston': {
+    cityName: 'Boston',
+    cityNameZh: '波士顿',
+    culturalSummary: 'Boston through culture: Seen on screen in Good Will Hunting and Fever Pitch; read on the page in The Boston Girl and The Art Forger.',
+    culturalSummaryZh: '文化视角下的波士顿：在《心灵捕手》和《极度狂热》的银幕中穿梭；在《波士顿女孩》和《艺术伪造者》的文字间漫步。',
+    onScreen: [
+      { title: 'Good Will Hunting', titleZh: '心灵捕手', location: 'Public Garden', locationZh: '公共花园', genre: 'Drama', genreZh: '剧情', summary: 'A janitor at MIT has a gift for mathematics but needs help from a psychologist to find direction in his life.', summaryZh: '麻省理工学院的一名清洁工在数学方面极具天赋，但在心理学家的帮助下才找到了人生的方向。' },
+      { title: 'Cheers', titleZh: '欢乐酒店', location: 'Beacon Hill area', locationZh: '灯塔山区域', genre: 'Sitcom', genreZh: '情景喜剧', summary: 'The regulars of the Boston bar "Cheers" share their experiences while working or drinking at the bar.', summaryZh: '波士顿“欢乐酒店”酒吧的常客们在酒吧工作或喝酒时分享着他们的经历。' },
+    ],
+    onThePage: [
+      { title: 'The Boston Girl', titleZh: '波士顿女孩', genre: 'Historical Fiction', genreZh: '历史小说', summary: 'A young woman growing up in early 20th-century Boston navigates family, love, and independence.', summaryZh: '一个在20世纪初波士顿长大的年轻女子在家庭、爱情和独立之间寻找平衡。' },
+      { title: 'The Art Forger', titleZh: '艺术伪造者', genre: 'Mystery', genreZh: '悬疑', summary: 'A struggling artist gets involved in a mystery surrounding the famous Gardner Museum heist.', summaryZh: '一名落魄的艺术家卷入了一场围绕著名的加德纳博物馆抢劫案的谜团。' },
+    ],
+    walkTheCity: [
+      { title: 'Boston Common', titleZh: '波士顿公园' },
+      { title: 'Beacon Hill', titleZh: '灯塔山' },
+    ]
+  },
+  '波士顿': { $ref: 'boston' },
+  'london': {
+    cityName: 'London',
+    cityNameZh: '伦敦',
+    culturalSummary: 'London through culture: Seen on screen in Notting Hill and Sherlock Holmes; read on the page in Oliver Twist and Mrs. Dalloway.',
+    culturalSummaryZh: '文化视角下的伦敦：在《诺丁山》和《福尔摩斯》的银幕中穿梭；在《雾都孤儿》和《达洛维夫人》的文字间漫步。',
+    onScreen: [
+      { title: 'Notting Hill', titleZh: '诺丁山', location: 'Notting Hill', locationZh: '诺丁山', genre: 'Romance', genreZh: '浪漫', summary: 'A simple bookshop owner meets a famous film star.', summaryZh: '一个平凡的旅行书店老板意外遇到了好莱坞大明星。' },
+    ],
+    onThePage: [
+      { title: 'Oliver Twist', titleZh: '雾都孤儿', genre: 'Classic', genreZh: '经典', summary: 'A young orphan\'s journey through the dark streets of London.', summaryZh: '一个年轻孤儿在伦敦黑暗街道上的旅程。' },
+    ],
+    walkTheCity: [
+      { title: 'Notting Hill', titleZh: '诺丁山' },
+      { title: 'British Museum', titleZh: '大英博物馆' },
+    ]
+  },
+  '伦敦': { $ref: 'london' },
+  'beijing': {
+    cityName: 'Beijing',
+    cityNameZh: '北京',
+    culturalSummary: 'Beijing through culture: Seen on screen in Farewell My Concubine; read on the page in Rickshaw Boy.',
+    culturalSummaryZh: '文化视角下的北京：在《霸王别姬》的银幕中穿梭；在《骆驼祥子》的文字间漫步。',
+    onScreen: [
+      { title: 'Farewell My Concubine', titleZh: '霸王别姬', location: 'Prince Kung\'s Mansion', locationZh: '恭王府', genre: 'Drama', genreZh: '剧情', summary: 'The story of two performers in the Peking Opera.', summaryZh: '讲述了两个京剧演员半个世纪的悲欢离合。' },
+    ],
+    onThePage: [
+      { title: 'Rickshaw Boy', titleZh: '骆驼祥子', genre: 'Classic', genreZh: '经典', summary: 'The life of a rickshaw puller in old Beijing.', summaryZh: '旧北京一个人力车夫的生活。' },
+    ],
+    walkTheCity: [
+      { title: 'Forbidden City', titleZh: '故宫' },
+      { title: 'Hutong', titleZh: '胡同' },
+    ]
+  },
+  '北京': { $ref: 'beijing' },
+  'rome': {
+    cityName: 'Rome',
+    cityNameZh: '罗马',
+    culturalSummary: 'Rome through culture: Seen on screen in Roman Holiday; read on the page in Angels & Demons.',
+    culturalSummaryZh: '文化视角下的罗马：在《罗马假日》的银幕中穿梭；在《天使与魔鬼》的文字间漫步。',
+    onScreen: [
+      { title: 'Roman Holiday', titleZh: '罗马假日', location: 'Spanish Steps', locationZh: '西班牙阶梯', genre: 'Romance', genreZh: '浪漫', summary: 'A princess escapes her guardians in Rome.', summaryZh: '一位公主在罗马私自出游。' },
+    ],
+    onThePage: [
+      { title: 'Angels & Demons', titleZh: '天使与魔鬼', genre: 'Thriller', genreZh: '惊悚', summary: 'A Harvard professor uncovers a secret society in Rome.', summaryZh: '一位哈佛教授在罗马揭开了一个秘密社团的谜团。' },
+    ],
+    walkTheCity: [
+      { title: 'Colosseum', titleZh: '斗兽场' },
+      { title: 'Trevi Fountain', titleZh: '特雷维喷泉' },
+    ]
+  },
+  '罗马': { $ref: 'rome' },
   'new york': {
     cityName: 'New York',
     cityNameZh: '纽约',
@@ -466,7 +536,6 @@ export default function App() {
           // Fallback to all works if no specific match, but maybe shuffle them
           setFilteredWorks([...MOCK_WORKS].sort(() => Math.random() - 0.5));
           setIsFallback(true);
-          toast.info(language === 'zh' ? `未找到 ${city} 的特定灵感，为你推荐全球精彩内容` : `No specific inspiration for ${city}, showing global recommendations.`);
         }
       }
       setIsSearching(false);
