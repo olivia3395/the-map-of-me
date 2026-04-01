@@ -30,13 +30,18 @@ export default function AddPlaceModal({ isOpen, onClose, onAdd, language }: AddP
       return;
     }
 
+    if (['Taiwan', '台湾'].some(r => cityName.includes(r) || country.includes(r))) {
+      setError(language === 'zh' ? "无法找到该地点的坐标，请检查拼写。" : "Could not find coordinates for this location. Please check the spelling.");
+      return;
+    }
+
     setIsSearching(true);
     setError("");
 
     const normalizeCountry = (cityName: string, countryName: string) => {
       const chinaRegions = ['Hong Kong', 'Macau', 'Taiwan', '香港', '澳门', '台湾'];
       if (chinaRegions.some(r => cityName.includes(r) || countryName.includes(r))) {
-        return language === 'zh' ? '中国' : 'China';
+        return 'China';
       }
       return countryName;
     };
@@ -128,7 +133,13 @@ export default function AddPlaceModal({ isOpen, onClose, onAdd, language }: AddP
                     <input
                       type="text"
                       value={cityName}
-                      onChange={(e) => setCityName(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setCityName(val);
+                        if (['Taiwan', '台湾'].some(r => val.includes(r))) {
+                          setCountry('China');
+                        }
+                      }}
                       className="w-full bg-white border border-trippin-line rounded-xl px-4 py-3 text-trippin-ink focus:outline-none focus:border-trippin-accent transition-all placeholder:opacity-20"
                       placeholder={language === 'en' ? 'Paris' : '巴黎'}
                     />
@@ -140,7 +151,14 @@ export default function AddPlaceModal({ isOpen, onClose, onAdd, language }: AddP
                     <input
                       type="text"
                       value={country}
-                      onChange={(e) => setCountry(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (['Taiwan', '台湾'].some(r => val.includes(r))) {
+                          setCountry('China');
+                        } else {
+                          setCountry(val);
+                        }
+                      }}
                       className="w-full bg-white border border-trippin-line rounded-xl px-4 py-3 text-trippin-ink focus:outline-none focus:border-trippin-accent transition-all placeholder:opacity-20"
                       placeholder={language === 'en' ? 'France' : '法国'}
                     />

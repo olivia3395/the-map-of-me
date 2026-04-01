@@ -553,7 +553,7 @@ export default function App() {
     const normalizeCountry = (location: string) => {
       const chinaRegions = ['Hong Kong', 'Macau', 'Taiwan', '香港', '澳门', '台湾'];
       if (chinaRegions.some(r => location.includes(r))) {
-        return language === 'zh' ? '中国' : 'China';
+        return 'China';
       }
       return "USA"; // Mock default
     };
@@ -857,6 +857,12 @@ export default function App() {
         {/* Global UI Elements */}
         <div className="pointer-events-none absolute bottom-8 right-8 z-40 flex flex-col gap-3">
           <button 
+            onClick={() => setIsAddingPlace(true)}
+            className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-trippin-accent text-white shadow-lg ring-1 ring-trippin-line transition-transform hover:scale-105 active:scale-95"
+          >
+            <Plus className="h-5 w-5" />
+          </button>
+          <button 
             onClick={handleThemeToggle}
             className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-trippin-ink shadow-lg ring-1 ring-trippin-line transition-transform hover:scale-105 active:scale-95"
           >
@@ -868,6 +874,11 @@ export default function App() {
           >
             <MapPin className="h-5 w-5" />
           </button>
+        </div>
+
+        {/* Copyright Footer */}
+        <div className="absolute bottom-4 left-24 z-40 text-[10px] text-trippin-ink/30 font-mono">
+          © 2026 Yuyao Wang | yuyaow@bu.edu
         </div>
       </main>
 
